@@ -1,0 +1,4 @@
+[
+    { "caption": "Doorstop: Debug", "command": "doorstop_debug" },
+    { "caption": "Doorstop: Copy reference", "command": "doorstop_copy_reference" }
+]

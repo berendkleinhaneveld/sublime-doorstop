@@ -5,6 +5,16 @@ level: 1.3
 links: []
 normative: true
 ref: ''
+references:
+- path: doorstop.py
+  type: file
+  keyword: 'class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):'
+- path: doorstop.sublime-commands
+  type: file
+  keyword: 'Doorstop: Copy reference'
+- path: doorstop.py
+  type: file
+  keyword: DoorstopCreateReferenceCommand
 reviewed: null
 text: |
   User shall be able to create references
