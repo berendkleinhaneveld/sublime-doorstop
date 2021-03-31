@@ -1,0 +1,22 @@
+active: true
+derived: false
+header: ''
+level: 1.3
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  User shall be able to create references
+
+  When the user highlights some text in a file, then the user
+  shall be able to run a command to copy a 'doorstop' reference
+  dict.
+
+  Fancy version would actually ask the user to search for an item
+  to add the reference to. Search would include doorstop document
+  paths and header/text content.
+
+  * Command palette: Doorstop: copy reference
+  * Command palette: Doorstop: create reference
+      * Ask user to search for doorstop item to add reference to

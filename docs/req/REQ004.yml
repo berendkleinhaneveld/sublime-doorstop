@@ -1,0 +1,19 @@
+active: true
+derived: false
+header: ''
+level: 1.5
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  User shall be able to navigate to references
+
+  Doorstop items can contain references to arbitrary files,
+  which should be easy for the user to follow.
+
+  Could work as:
+
+  * Mouse hover with link
+  * Command palette: Doorstop: GoTo Reference
+      * When more than one reference: show list

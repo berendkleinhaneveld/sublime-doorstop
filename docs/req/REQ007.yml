@@ -1,0 +1,20 @@
+active: true
+derived: false
+header: ''
+level: 1.6
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  User shall be able to see referenced files/keywords
+
+  The doorstop documents can contain references to files and optionally
+  to certain keywords within those files. When the user opens such a
+  file, then a bookmark shall be shown.
+
+  The bookmark shall also work as a link to the doorstop document that
+  contains the reference.
+
+  * Command palette: Doorstop: GoTo Item
+      * List all items that contain references to current file

@@ -1,0 +1,13 @@
+active: true
+derived: false
+header: ''
+level: 1.4
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  User shall be able to add items to documents
+
+  * Command palette: Doorstop: Add item
+      * Search for document prefixes
