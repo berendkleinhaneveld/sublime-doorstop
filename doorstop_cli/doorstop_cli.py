@@ -14,37 +14,43 @@ logger = logging.getLogger("DoorstopPlugin")
 
 def document(args):
     tree = doorstop.build(root=args.root)
-    print(json.dumps(get_document_prefixes(tree)))
+    # prefixes = {doc.prefix: doc.path for doc in tree.documents}
+    prefixes = [{"prefix": doc.prefix, "path": doc.path} for doc in tree.documents]
+    print(json.dumps(prefixes))
 
 
 def items(args):
     tree = doorstop.build(root=args.root)
-    print(json.dumps(get_items_for_document_prefix(tree, args.prefix)))
+    document = tree.find_document(args.prefix)
+    items = [
+        {
+            "uid": str(item.uid),
+            "path": item.path,
+            "text": item.header if item.header else item.text.split("\n")[0],
+        }
+        for item in document.items
+    ]
+    # items = {str(item.uid): item.path for item in document.items}
+    print(json.dumps(items))
 
 
 def add_reference_to_item(args):
     tree = doorstop.build(root=args.root)
     reference = json.loads(args.reference)
-    add_reference(tree, args.item, reference)
-
-
-def get_document_prefixes(tree):
-    return {doc.prefix: doc.path for doc in tree.documents}
-
-
-def get_items_for_document_prefix(tree, prefix):
-    document = tree.find_document(prefix)
-    return {str(item.uid): str(item.path) for item in document.items}
-
-
-def add_reference(tree, item, reference):
-    item = tree.find_item(item)
+    item = tree.find_item(args.item)
     if not item.references:
         item.references = []
 
     if reference not in item.references:
         item.references.append(reference)
         item.save()
+
+
+def add_item(args):
+    tree = doorstop.build(root=args.root)
+    document = tree.find_document(args.prefix)
+    item = document.add_item()
+    print(json.dumps({str(item.uid): item.path}))
 
 
 if __name__ == "__main__":
@@ -92,6 +98,16 @@ if __name__ == "__main__":
         action="store",
         type=str,
         help="JSON representation of reference to add",
+    )
+
+    add_item_command = commands.add_parser("add_item", help="Add item to document")
+    add_item_command.set_defaults(func=add_item)
+    add_item_command.add_argument(
+        "--prefix",
+        action="store",
+        required=True,
+        type=str,
+        help="Prefix of doorstop document",
     )
 
     args = parser.parse_args()

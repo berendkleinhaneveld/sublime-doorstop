@@ -6,15 +6,15 @@ links: []
 normative: true
 ref: ''
 references:
-- path: doorstop.py
+- keyword: 'class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):'
+  path: doorstop_plugin.py
   type: file
-  keyword: 'class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):'
-- path: doorstop.sublime-commands
+- keyword: 'Doorstop: Copy reference'
+  path: doorstop.sublime-commands
   type: file
-  keyword: 'Doorstop: Copy reference'
-- path: doorstop.py
+- keyword: DoorstopCreateReferenceCommand
+  path: doorstop_plugin.py
   type: file
-  keyword: DoorstopCreateReferenceCommand
 reviewed: null
 text: |
   User shall be able to create references
@@ -23,9 +23,9 @@ text: |
   shall be able to run a command to copy a 'doorstop' reference
   dict.
 
-  Fancy version would actually ask the user to search for an item
-  to add the reference to. Search would include doorstop document
-  paths and header/text content.
+  Creating a reference shall ask the user to search for an item
+  to add the reference to. Search would include item uids and
+  header/text (first line) content.
 
   * Command palette: Doorstop: copy reference
   * Command palette: Doorstop: create reference

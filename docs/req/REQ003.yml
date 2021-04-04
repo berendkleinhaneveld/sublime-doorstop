@@ -5,6 +5,10 @@ level: 1.4
 links: []
 normative: true
 ref: ''
+references:
+- keyword: 'class DoorstopAddItemCommand(sublime_plugin.WindowCommand):'
+  path: doorstop_plugin.py
+  type: file
 reviewed: null
 text: |
   User shall be able to add items to documents

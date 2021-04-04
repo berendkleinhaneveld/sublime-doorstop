@@ -1,3 +1,4 @@
 {
-    "python_interpreter": "python"
+    "python_interpreter": "python",
+    "doorstop_root": null
 }

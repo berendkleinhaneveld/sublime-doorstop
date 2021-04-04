@@ -4,6 +4,7 @@ import sublime
 class Setting:
     def __init__(self):
         self.INTERPRETER = "python_interpreter"
+        self.ROOT = "doorstop_root"
 
     def __iter__(self):
         for x in dir(self):

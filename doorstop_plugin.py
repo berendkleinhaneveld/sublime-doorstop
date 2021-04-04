@@ -13,6 +13,13 @@ DOORSTOP_KEY = "doorstop"
 settings = None
 
 
+def trace():
+    import pdb
+    import sys
+
+    pdb.Pdb(stdout=sys.__stdout__).set_trace()
+
+
 def plugin_loaded():
     print("==LOADED==")
     global settings
@@ -24,20 +31,9 @@ def plugin_unloaded():
     global settings
     settings.remove_callbacks()
 
-    doorstop_plugin_classes = [
-        "DoorstopDebugCommand",
-        "DoorstopCopyReferenceCommand",
-        "DoorstopCreateReferenceCommand",
-        "DoorstopFindDocumentInputHandler",
-        "DoorstopFindItemInputHandler",
-        "DoorstopSetDoorstopPythonInterpreterCommand",
-        "DoorstopPythonInterpreterInputHandler",
-    ]
-    for class_name in doorstop_plugin_classes:
-        try:
-            del globals()[class_name]
-        except Exception as e:
-            print(e)
+    for key in list(globals().keys()):
+        if "doorstop" in key.lower():
+            del globals()[key]
 
 
 class DoorstopSetDoorstopPythonInterpreterCommand(sublime_plugin.ApplicationCommand):
@@ -47,7 +43,7 @@ class DoorstopSetDoorstopPythonInterpreterCommand(sublime_plugin.ApplicationComm
         # FIXME: this might not work... Only seems to update the settings for
         # the current view :'( There does not seem to be a way to update the setting
         # for the user...
-        sublime.save_settings("Doorstop.sublime-settings")
+        settings.save()
 
     def input(self, args):
         return DoorstopPythonInterpreterInputHandler()
@@ -70,11 +66,6 @@ class DoorstopDebugCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         global settings
         print(settings.get(Setting().INTERPRETER))
-
-        # import pdb
-        # import sys
-
-        # pdb.Pdb(stdout=sys.__stdout__).set_trace()
 
 
 def _reference(view: sublime.View):
@@ -120,6 +111,21 @@ def run_doorstop_command(args):
     return result
 
 
+class DoorstopAddItemCommand(sublime_plugin.WindowCommand):
+    def run(self, document):
+        result = run_doorstop_command(
+            ["--root", self.window.folders()[0], "add_item", "--prefix", document]
+        )
+        new_item = json.loads(result.decode("utf-8"))
+        path = list(new_item.values())[0]
+        self.window.open_file(path)
+
+    def input(self, args):
+        # FIXME: what if no folder is open?
+        project_dir = self.window.folders()[0]
+        return DoorstopFindDocumentInputHandler(project_dir)
+
+
 class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
     """
     Creates content for the paste buffer to be able to paste the
@@ -158,12 +164,6 @@ class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
 class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     def run(self, edit, document, item):
         reference = _reference(self.view)
-
-        print(reference)
-        print("doc: {}".format(document))
-        print("item type: {}".format(type(item)))
-        print("item: {}".format(item))
-
         run_doorstop_command(
             [
                 "--root",
@@ -179,16 +179,18 @@ class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
         return self.view.file_name is not None
 
     def input(self, args):
-        print("args: {}".format(args))
         # TODO: make this configurable in settings
         # if not empty, use setting, otherwise try first open folder
         project_dir = self.view.window().folders()[0]
-        return DoorstopFindDocumentInputHandler(project_dir)
+        return DoorstopFindDocumentInputHandler(
+            project_dir, DoorstopFindItemInputHandler
+        )
 
 
 class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
-    def __init__(self, root):
+    def __init__(self, root, next_input_type=None):
         self.root = root
+        self.next_input_type = next_input_type
 
     def name(self):
         return "document"
@@ -199,12 +201,14 @@ class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
             return []
 
         json_result = result.decode("utf-8")
-        values = list(json.loads(json_result).keys())
-        values.sort()
-        return values
+        items = json.loads(json_result)
+        return [item["prefix"] for item in items]
 
     def next_input(self, args):
-        return DoorstopFindItemInputHandler(self.root, args["document"])
+        # print("--> args: {}".format(args))
+        if self.next_input_type:
+            return self.next_input_type(self.root, args["document"])
+        return None
 
 
 class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
@@ -229,6 +233,5 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
             return []
 
         json_result = result.decode("utf-8")
-        values = list(json.loads(json_result).keys())
-        values.sort()
-        return values
+        items = json.loads(json_result)
+        return ["{}: {}".format(item["uid"], item["text"]) for item in items]

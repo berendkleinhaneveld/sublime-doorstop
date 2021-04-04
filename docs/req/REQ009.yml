@@ -1,0 +1,13 @@
+active: true
+derived: false
+header: ''
+level: 1.8
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  Lint the references
+
+  When a reference from an item cannot be found, then it should
+  display an error/warning (just like a linter)
