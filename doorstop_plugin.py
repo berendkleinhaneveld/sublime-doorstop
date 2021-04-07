@@ -41,7 +41,7 @@ def plugin_unloaded():
             del globals()[key]
 
 
-class Reference:
+class DoorstopReference:
     def __init__(self, region, path=None, file=None, keyword=None, point=None):
         self.region = region
         self.path = path
@@ -126,7 +126,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         path = parsed.get("path")
         keyword = parsed.get("keyword")
 
-        reference = Reference(region, path=path, keyword=keyword)
+        reference = DoorstopReference(region, path=path, keyword=keyword)
 
         if not path:
             return reference
