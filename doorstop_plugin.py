@@ -41,169 +41,6 @@ def plugin_unloaded():
             del globals()[key]
 
 
-class DoorstopReference:
-    def __init__(self, region, path=None, file=None, keyword=None, point=None):
-        self.region = region
-        self.path = path
-        self.file = file
-        self.keyword = keyword
-        self.point = point
-
-    def is_valid(self):
-        if not self.path:
-            return False
-        if self.keyword and not self.point:
-            return False
-        return True
-
-
-class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
-    @classmethod
-    def is_applicable(cls, settings):
-        return "yaml" in settings.get("syntax").lower()
-
-    def update_regions(self):
-        # Find references key
-        references_regions = self.view.find_all(r"^references:$")
-        if len(references_regions) != 1:
-            return
-
-        references_region = references_regions[0]
-
-        lines_that_start_with_word = self.view.find_all(r"^\w+")
-
-        attribute_after_references = None
-        for x in lines_that_start_with_word:
-            if x.begin() > references_region.begin():
-                attribute_after_references = x
-
-        regions = []
-        items = self.view.find_all(r"(?s)*(^- .*?)(?:(?!^[-|\w]).)*")
-        for item in items:
-            if item.begin() < references_region.begin():
-                continue
-            if item.begin() > attribute_after_references.begin():
-                continue
-            regions.append(sublime.Region(item.begin(), item.end()))
-
-        self.references = [self.region_to_reference(region) for region in regions]
-
-        self.view.add_regions(
-            "doorstop:valid",
-            [ref.region for ref in self.references if ref.is_valid()],
-            "string",  # scope
-            "bookmark",
-            sublime.DRAW_NO_FILL,
-        )
-        self.view.add_regions(
-            "doorstop:invalid",
-            [ref.region for ref in self.references if not ref.is_valid()],
-            "invalid",  # scope
-            "bookmark",
-            # sublime.DRAW_STIPPLED_UNDERLINE
-            # | sublime.DRAW_NO_OUTLINE
-            # |
-            sublime.DRAW_NO_FILL,
-        )
-
-    def on_activated_async(self):
-        """
-        Called when a view gains input focus.
-        """
-        self.update_regions()
-
-    def parse_reference_region(self, region):
-        text = self.view.substr(region)
-        try:
-            content = yaml.load(text, Loader=yaml.SafeLoader)
-            return content[0]
-        except Exception:
-            print("Could not parse region: {}".format(text))
-        return None
-
-    def region_to_reference(self, region):
-        parsed = self.parse_reference_region(region)
-        path = parsed.get("path")
-        keyword = parsed.get("keyword")
-
-        reference = DoorstopReference(region, path=path, keyword=keyword)
-
-        if not path:
-            return reference
-
-        root = Path(self.view.window().folders()[0])
-        file = root / path
-        if not file.is_file():
-            return reference
-
-        reference.file = str(file)
-
-        with open(str(file), mode="r", encoding="utf-8") as fh:
-            point = 0
-            line = fh.readline()
-            while line:
-                if keyword in line:
-                    reference.point = point
-                    break
-                point += len(line)
-                line = fh.readline()
-
-        return reference
-
-    def on_hover(self, point, hover_zone):
-        if not hasattr(self, "references"):
-            return
-
-        hovered_references = [
-            ref for ref in self.references if ref.region.contains(point)
-        ]
-        if len(hovered_references) > 0:
-            hovered_reference = hovered_references[0]
-            href = hovered_reference.path
-            if hovered_reference.point:
-                href += ":" + str(hovered_reference.point)
-
-            if href:
-                self.view.show_popup(
-                    "<a href='{}'>{}</a>".format(href, hovered_reference.path),
-                    sublime.HIDE_ON_MOUSE_MOVE_AWAY,
-                    point,
-                    500,
-                    500,
-                    self.link_clicked,
-                )
-
-    def link_clicked(self, href):
-        root = Path(self.view.window().folders()[0])
-        try:
-            idx = href.index(":")
-        except ValueError:
-            self.view.window().open_file(str(root / href))
-            return
-
-        file = href[:idx]
-        point = href[idx + 1 :]
-
-        file_view = self.view.window().open_file(str(root / file))
-        file_view.show_at_center(int(point))
-        file_view.sel().clear()
-        file_view.sel().add(sublime.Region(int(point), int(point)))
-
-    def on_deactivated(self):
-        """
-        Called when a view loses input focus.
-        """
-        self.view.erase_regions("doorstop:invalid")
-        self.view.erase_regions("doorstop:valid")
-
-    def on_modified_async(self):
-        """
-        Called after changes have been made to a view. Runs in a separate thread, and
-        does not block the application.
-        """
-        self.update_regions()
-
-
 class DoorstopSetDoorstopPythonInterpreterCommand(sublime_plugin.ApplicationCommand):
     def run(self, interpreter):
         global settings
@@ -331,6 +168,7 @@ class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
 
 class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     def run(self, edit, document, item):
+
         reference = _reference(self.view)
         run_doorstop_command(
             [
@@ -401,4 +239,224 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
 
         json_result = result.decode("utf-8")
         items = json.loads(json_result)
-        return ["{}: {}".format(item["uid"], item["text"]) for item in items]
+        return [
+            ("{}: {}".format(item["uid"], item["text"]), item["uid"]) for item in items
+        ]
+
+
+class DoorstopReference:
+    def __init__(self, region, path=None, file=None, keyword=None, point=None):
+        self.region = region
+        self.path = path
+        self.file = file
+        self.keyword = keyword
+        self.point = point
+
+    def is_valid(self):
+        if not self.path:
+            return False
+        if self.keyword and not self.point:
+            return False
+        return True
+
+
+class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
+    @classmethod
+    def is_applicable(cls, settings):
+        return "yaml" in settings.get("syntax").lower()
+
+    def update_regions(self):
+        references_regions = self.view.find_all(r"^references:$")
+        if len(references_regions) != 1:
+            return
+
+        references_region = references_regions[0]
+
+        lines_that_start_with_word = self.view.find_all(r"^\w+")
+
+        attribute_after_references = None
+        for x in lines_that_start_with_word:
+            if x.begin() > references_region.begin():
+                attribute_after_references = x
+
+        regions = []
+        items = self.view.find_all(r"(?s)*(^- .*?)(?:(?!^[-|\w]).)*")
+        for item in items:
+            if item.begin() < references_region.begin():
+                continue
+            if item.begin() > attribute_after_references.begin():
+                continue
+            regions.append(sublime.Region(item.begin(), item.end()))
+
+        self.references = [region_to_reference(self.view, region) for region in regions]
+
+        self.view.add_regions(
+            "doorstop:valid",
+            [ref.region for ref in self.references if ref.is_valid()],
+            "string",
+            "bookmark",
+            sublime.DRAW_NO_FILL,
+        )
+        self.view.add_regions(
+            "doorstop:invalid",
+            [ref.region for ref in self.references if not ref.is_valid()],
+            "invalid",
+            "bookmark",
+            sublime.DRAW_NO_FILL,
+        )
+
+    def on_load_async(self):
+        """
+        Called when the file is finished loading. Runs in a separate thread,
+        and does not block the application.
+        """
+        self.update_regions()
+
+    def on_activated_async(self):
+        """
+        Called when a view gains input focus.
+        """
+        self.update_regions()
+
+    def on_hover(self, point, hover_zone):
+        if not hasattr(self, "references"):
+            return
+
+        hovered_references = [
+            ref for ref in self.references if ref.region.contains(point)
+        ]
+        if len(hovered_references) > 0:
+            hovered_reference = hovered_references[0]
+            href = hovered_reference.path
+            if hovered_reference.point:
+                href += ":" + str(hovered_reference.point)
+
+            if href:
+                self.view.show_popup(
+                    "<a href='{}'>{}</a>".format(href, hovered_reference.path),
+                    sublime.HIDE_ON_MOUSE_MOVE_AWAY,
+                    point,
+                    500,
+                    500,
+                    self.link_clicked,
+                )
+
+    def link_clicked(self, href):
+        root = Path(self.view.window().folders()[0])
+        try:
+            idx = href.index(":")
+        except ValueError:
+            self.view.window().open_file(str(root / href))
+            return
+
+        file = href[:idx]
+        point = href[idx + 1 :]
+
+        file_view = self.view.window().open_file(str(root / file))
+        file_view.show_at_center(int(point))
+        file_view.sel().clear()
+        file_view.sel().add(sublime.Region(int(point), int(point)))
+
+    def on_close(self):
+        """
+        Called when a view loses input focus.
+        """
+        self.view.erase_regions("doorstop:invalid")
+        self.view.erase_regions("doorstop:valid")
+
+    def on_modified_async(self):
+        """
+        Called after changes have been made to a view. Runs in a separate thread, and
+        does not block the application.
+        """
+        self.update_regions()
+
+
+class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
+    def goto_reference(self, idx):
+        if idx < 0:
+            return
+
+        root = Path(self.view.window().folders()[0])
+        reference = self.references[idx]
+        file_view = self.view.window().open_file(str(root / reference.file))
+        if reference.point:
+            file_view.show_at_center(int(reference.point))
+            file_view.sel().clear()
+            file_view.sel().add(
+                sublime.Region(int(reference.point), int(reference.point))
+            )
+
+    def run(self, edit):
+        regions = self.view.get_regions("doorstop:valid")
+        self.references = [region_to_reference(self.view, region) for region in regions]
+        if len(self.references) == 1:
+            self.goto_reference(0)
+        else:
+            items = [
+                ref.path if not ref.keyword else "{}: {}".format(ref.path, ref.keyword)
+                for idx, ref in enumerate(self.references)
+            ]
+            self.view.window().show_quick_panel(
+                items,
+                self.goto_reference,
+            )
+
+    def is_enabled(self, *args):
+        return len(self.view.get_regions("doorstop:valid")) >= 1
+
+
+class DoorstopChooseReferenceInputHandler(sublime_plugin.ListInputHandler):
+    def __init__(self, references):
+        self.references = references
+
+    def name(self):
+        return "ref_idx"
+
+    def list_items(self):
+        return [
+            (ref.path, idx)
+            if not ref.keyword
+            else ("{}: {}".format(ref.path, ref.keyword), idx)
+            for idx, ref in enumerate(self.references)
+        ]
+
+
+def parse_reference_region(view, region):
+    text = view.substr(region)
+    try:
+        content = yaml.load(text, Loader=yaml.SafeLoader)
+        return content[0]
+    except Exception:
+        print("Could not parse region: {}".format(text))
+    return None
+
+
+def region_to_reference(view, region):
+    parsed = parse_reference_region(view, region)
+    path = parsed.get("path")
+    keyword = parsed.get("keyword")
+
+    reference = DoorstopReference(region, path=path, keyword=keyword)
+
+    if not path:
+        return reference
+
+    root = Path(view.window().folders()[0])
+    file = root / path
+    if not file.is_file():
+        return reference
+
+    reference.file = str(file)
+
+    with open(str(file), mode="r", encoding="utf-8") as fh:
+        point = 0
+        line = fh.readline()
+        while line:
+            if keyword in line:
+                reference.point = point
+                break
+            point += len(line)
+            line = fh.readline()
+
+    return reference

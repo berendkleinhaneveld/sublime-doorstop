@@ -10,6 +10,12 @@ references:
 - keyword: 'class DoorstopReferencesListener(sublime_plugin.ViewEventListener):'
   path: doorstop_plugin.py
   type: file
+- keyword: 'Doorstop: GoTo reference'
+  path: doorstop.sublime-commands
+  type: file
+- keyword: DoorstopGotoReferenceCommand
+  path: doorstop_plugin.py
+  type: file
 reviewed: null
 text: |
   User shall be able to navigate to references
