@@ -1,0 +1,18 @@
+active: true
+derived: false
+header: ''
+level: 1.9
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  User shall be able to see referenced locations
+
+  Bookmarks shall be shown at locations when a doorstop item
+  contains a reference to the file (with keyword).
+
+  They will link back to the doorstop item that contains the reference.
+
+  * Bookmark icon in gutter (hover + link)
+  * Command palette: GoTo references
