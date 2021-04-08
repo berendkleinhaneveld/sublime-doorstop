@@ -1,0 +1,13 @@
+active: false
+derived: false
+header: ''
+level: 1.11
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  If user has specified doorstop root, then it might be
+  possible to check if there is a `pyproject.toml` file
+  and see if there is a corresponding `poetry` venv that
+  can be used as python interpreter.

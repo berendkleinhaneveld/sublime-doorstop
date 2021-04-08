@@ -1,0 +1,14 @@
+active: false
+derived: false
+header: ''
+level: 1.12
+links: []
+normative: true
+ref: ''
+reviewed: null
+text: |
+  Plugin will only run when a project is active?
+
+  The project can be used for figuring out the doorstop root folder.
+  And it might also be used to find python interpreter, if a pyproject.toml
+  file is available somewhere, for instance...

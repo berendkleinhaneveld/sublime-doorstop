@@ -1,0 +1,19 @@
+active: true
+derived: false
+header: ''
+level: '1.10'
+links: []
+normative: true
+ref: ''
+references:
+- keyword: def _doorstop_root
+  path: doorstop_plugin.py
+  type: file
+reviewed: null
+text: |
+  User shall be able to specify plugin settings interactively
+
+  There shall be the following commands to specify project settings:
+
+  * Doorstop: Specify doorstop root for project
+  * Doorstop: Specify python interpreter for project
