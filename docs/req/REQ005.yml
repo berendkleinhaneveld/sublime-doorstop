@@ -5,7 +5,7 @@ level: 1.1
 links: []
 normative: true
 ref: ''
-reviewed: null
+reviewed: lO4EIsEEbbXOjjZfCIFKEOK044GGPwKKkZqeBpW1wNg=
 text: |
   User shall be able to navigate to parent/linked item(s)
 
@@ -16,4 +16,4 @@ text: |
 
   * Mouse hover with link
   * Command palette: Doorstop: GoTo Link / Parent
-      * When more than one link: show list
+      * Always show list

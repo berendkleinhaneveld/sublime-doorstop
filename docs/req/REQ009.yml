@@ -9,7 +9,7 @@ references:
 - keyword: 'class DoorstopReferencesListener(sublime_plugin.ViewEventListener):'
   path: doorstop_plugin.py
   type: file
-reviewed: null
+reviewed: Gy1MhfEJxBqJYKR0FOxFKSXTa-N8Eke0s971pcsqRjw=
 text: |
   Lint the references
 

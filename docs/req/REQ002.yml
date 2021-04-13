@@ -15,7 +15,7 @@ references:
 - keyword: DoorstopCreateReferenceCommand
   path: doorstop_plugin.py
   type: file
-reviewed: null
+reviewed: CWGIXXpi39Gmp_m6pFAp7SbrlumBOtxswe3ks_C8Qb0=
 text: |
   User shall be able to create references
 

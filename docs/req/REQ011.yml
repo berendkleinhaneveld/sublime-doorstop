@@ -9,7 +9,7 @@ references:
 - keyword: def _doorstop_root
   path: doorstop_plugin.py
   type: file
-reviewed: null
+reviewed: YORy-wESnlvl4Olvvjw45TjdpRvG2b9IVI4rJ0sSkpU=
 text: |
   User shall be able to specify plugin settings interactively
 
