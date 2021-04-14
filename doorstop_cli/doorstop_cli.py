@@ -14,7 +14,6 @@ logger = logging.getLogger("DoorstopPlugin")
 
 def document(args):
     tree = doorstop.build(root=args.root)
-    # prefixes = {doc.prefix: doc.path for doc in tree.documents}
     prefixes = [{"prefix": doc.prefix, "path": doc.path} for doc in tree.documents]
     print(json.dumps(prefixes))
 
@@ -30,7 +29,6 @@ def items(args):
         }
         for item in document.items
     ]
-    # items = {str(item.uid): item.path for item in document.items}
     print(json.dumps(items))
 
 
