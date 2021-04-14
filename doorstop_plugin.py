@@ -133,6 +133,10 @@ class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
 
 
 class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
+    """
+    Add a new reference to an existing doorstop item.
+    """
+
     def run(self, edit, document, item):
 
         reference = doorstop_util._reference(self.view)
@@ -451,6 +455,54 @@ class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
         if file_name.name == ".doorstop.yml":
             return False
         return True
+
+
+class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        file_name = Path(self.view.file_name())
+        self.parents = doorstop_util._doorstop(
+            self, "parents", "--item", file_name.stem
+        )
+        self.children = doorstop_util._doorstop(
+            self, "children", "--item", file_name.stem
+        )
+        self.links = doorstop_util._doorstop(self, "linked", "--item", file_name.stem)
+
+        all_items = []
+        for name, items in zip(
+            ["Parent", "Child", "Other"], [self.parents, self.children, self.links]
+        ):
+            all_items.extend(
+                [
+                    "{}: {}: {}".format(name, link["uid"], link["text"])
+                    for idx, link in enumerate(items)
+                ]
+            )
+        self.view.window().show_quick_panel(
+            all_items,
+            self.goto_item,
+        )
+        # TODO: maybe show that no child can be found?
+
+    def is_enabled(self, *args):
+        if not self.view.file_name():
+            return False
+        file_name = Path(self.view.file_name())
+        if file_name.suffix != ".yml":
+            return False
+        if not (file_name.parent / ".doorstop.yml").exists():
+            return False
+        if file_name.name == ".doorstop.yml":
+            return False
+        return True
+
+    def goto_item(self, idx):
+        if idx < 0:
+            return
+
+        items = self.parents + self.children + self.links
+        item = items[idx]
+        self.view.window().open_file(item["path"], sublime.TRANSIENT)
 
 
 class DoorstopChooseReferenceInputHandler(sublime_plugin.ListInputHandler):
