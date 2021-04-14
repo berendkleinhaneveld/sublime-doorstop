@@ -490,6 +490,44 @@ class DoorstopGotoParentCommand(sublime_plugin.TextCommand):
         return True
 
 
+class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
+    def goto_child(self, idx):
+        if idx < 0:
+            return
+
+        parent = self.children[idx]
+        self.view.window().open_file(parent["path"], sublime.TRANSIENT)
+
+    def run(self, edit):
+        file_name = Path(self.view.file_name())
+        root = _doorstop_root(view=self.view)
+        result = _run_doorstop_command(
+            ["--root", root, "children", "--item", file_name.stem]
+        )
+        self.children = json.loads(result.decode("utf-8"))
+        items = [
+            "{}: {}".format(parent["uid"], parent["text"])
+            for idx, parent in enumerate(self.children)
+        ]
+        self.view.window().show_quick_panel(
+            items,
+            self.goto_child,
+        )
+        # TODO: maybe show that no child can be found?
+
+    def is_enabled(self, *args):
+        if not self.view.file_name():
+            return False
+        file_name = Path(self.view.file_name())
+        if file_name.suffix != ".yml":
+            return False
+        if not (file_name.parent / ".doorstop.yml").exists():
+            return False
+        if file_name.name == ".doorstop.yml":
+            return False
+        return True
+
+
 class DoorstopChooseReferenceInputHandler(sublime_plugin.ListInputHandler):
     def __init__(self, references):
         self.references = references

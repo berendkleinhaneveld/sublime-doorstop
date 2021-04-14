@@ -48,6 +48,20 @@ def parents(args):
     print(json.dumps(parents))
 
 
+def children(args):
+    tree = doorstop.build(root=args.root)
+    item = tree.find_item(args.item)
+    children = [
+        {
+            "uid": str(item.uid),
+            "path": item.path,
+            "text": item.header if item.header else item.text.split("\n")[0],
+        }
+        for item in item.child_items
+    ]
+    print(json.dumps(children))
+
+
 def add_reference_to_item(args):
     tree = doorstop.build(root=args.root)
     reference = json.loads(args.reference)
@@ -127,6 +141,12 @@ if __name__ == "__main__":
     parents_command = commands.add_parser("parents", help="Get parents for item")
     parents_command.set_defaults(func=parents)
     parents_command.add_argument(
+        "--item", action="store", required=True, type=str, help="Doorstop item name"
+    )
+
+    children_command = commands.add_parser("children", help="Get children for item")
+    children_command.set_defaults(func=children)
+    children_command.add_argument(
         "--item", action="store", required=True, type=str, help="Doorstop item name"
     )
 
