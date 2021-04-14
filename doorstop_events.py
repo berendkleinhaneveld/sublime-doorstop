@@ -121,7 +121,6 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
             )
         else:
             self.view.show_popup(
-                # "<a href='{}'>{}</a>".format(href, hovered_reference.path),
                 "".join(sections),
                 sublime.HIDE_ON_MOUSE_MOVE_AWAY,
                 point,
