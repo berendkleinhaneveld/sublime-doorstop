@@ -1,4 +1,6 @@
 {
     "python_interpreter": "python",
-    "doorstop_root": null
+    "doorstop_root": null,
+    "show_references_highlights": true,
+    "show_links_highlights": true
 }
