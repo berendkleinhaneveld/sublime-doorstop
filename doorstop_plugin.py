@@ -1,13 +1,13 @@
 import json
 from pathlib import Path
-import subprocess
-import yaml
 
 import sublime
 import sublime_plugin
 
 from .doorstop_plugin_api import Setting
 from .doorstop_plugin_api import Settings
+
+from . import doorstop_util
 
 
 DOORSTOP_KEY = "doorstop"
@@ -28,6 +28,7 @@ def trace():
 def plugin_loaded():
     global settings
     settings = Settings()
+    doorstop_util.settings = settings
 
 
 def plugin_unloaded():
@@ -65,106 +66,45 @@ class DoorstopPythonInterpreterInputHandler(sublime_plugin.TextInputHandler):
 
 
 class DoorstopDebugCommand(sublime_plugin.TextCommand):
+    """
+    Debug command that prints settings
+    """
+
     def run(self, edit):
         global settings
         for setting in Setting():
             print("{}: {}".format(setting, settings.get(setting)))
 
 
-def _is_doorstop_configured(view=None, window=None):
-    global settings
-    if settings.get(Setting().INTERPRETER) is None:
-        return False
-    if _doorstop_root(view=view, window=window) is None:
-        return False
-    return True
-
-
-def _doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> str:
-    global settings
-    root = settings.get(Setting().ROOT)
-    if root:
-        return root
-    if view:
-        if view.file_name():
-            path = Path(view.file_name())
-            # best_match = folder with .git as subfolder
-            # and a folder that is in close proximity to current opened file?
-            folders = view.window().folders()
-            rel_paths = [path.relative_to(Path(folder)) for folder in folders]
-            shortest_rel_path = None
-            result = None
-            for rel_path, path in zip(rel_paths, folders):
-                if not shortest_rel_path or len(str(rel_path)) < len(
-                    str(shortest_rel_path)
-                ):
-                    shortest_rel_path = rel_path
-                    result = path
-
-            return result
-    if window:
-        if window.folders():
-            return window.folders()[0]
-
-
-def _reference(view: sublime.View):
-    # Check the selection
-    keyword = None
-    selection = view.sel()
-    if len(selection) == 1:
-        # Only take the first line of the selection, if the
-        # selection is multiline
-        selected_text = view.substr(selection[0]).split("\n")[0]
-        if len(selected_text) > 0:
-            keyword = selected_text
-
-    # Create paths
-    project_dir = _doorstop_root(view=view)
-    current_file = view.window().extract_variables().get("file")
-    if not current_file:
-        return None
-
-    relative = Path(current_file).relative_to(project_dir)
-    result = {
-        "path": str(relative),
-        "type": "file",
-    }
-    if keyword:
-        result["keyword"] = keyword
-    return result
-
-
-def _run_doorstop_command(args):
-    global settings
-    interpreter = settings.get(Setting().INTERPRETER)
-    # TODO: maybe I could use the 'find_resources' method here from sublime
-    script = Path(__file__).parent / "doorstop_cli" / "doorstop_cli.py"
-    assert script.is_file()
-
-    try:
-        result = subprocess.check_output([interpreter, str(script)] + args)
-    except subprocess.CalledProcessError as e:
-        print("error: {}".format(e))
-        return None
-    return result
-
-
 class DoorstopAddItemCommand(sublime_plugin.WindowCommand):
-    def run(self, document):
-        root = _doorstop_root(window=self.window)
-        result = _run_doorstop_command(
-            ["--root", root, "add_item", "--prefix", document]
-        )
-        new_item = json.loads(result.decode("utf-8"))
+    """
+    Adds an item to the specified doorstop document
+    """
+
+    def _add_item(self, text):
+        args = ["--prefix", self.document]
+        if len(text) > 1:
+            args += ["--text", text]
+        new_item = doorstop_util._doorstop(self, "add_item", *args)
         path = list(new_item.values())[0]
         self.window.open_file(path)
 
+    def run(self, document):
+        self.document = document
+        self.window.show_input_panel(
+            "Specify (optional) text for new {} item".format(document),
+            "",
+            self._add_item,
+            None,
+            None,
+        )
+
     def input(self, args):
-        project_dir = _doorstop_root(window=self.window)
+        project_dir = doorstop_util._doorstop_root(window=self.window)
         return DoorstopFindDocumentInputHandler(project_dir)
 
     def is_enabled(self, *args):
-        return _is_doorstop_configured(
+        return doorstop_util._is_doorstop_configured(
             view=self.window.active_view(), window=self.window
         )
 
@@ -173,22 +113,10 @@ class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
     """
     Creates content for the paste buffer to be able to paste the
     reference in a doorstop item.
-
-    Example output of self.view.window().extract_variables:
-    {
-        'file': '~/Library/AppSupport/Sublime/Packages/doorstop/doorstop.py',
-        'file_base_name': 'doorstop',
-        'packages': '~/Library/AppSupport/Sublime/Packages',
-        'file_extension': 'py',
-        'file_name': 'doorstop.py',
-        'platform': 'OSX',
-        'folder': '~/Library/AppSupport/Sublime/Packages/doorstop',
-        'file_path': '~/Library/AppSupport/Sublime/Packages/doorstop'
-    }
     """
 
     def run(self, edit):
-        reference = _reference(self.view)
+        reference = doorstop_util._reference(self.view)
 
         # Create lines for the clipboard
         lines = [
@@ -207,17 +135,9 @@ class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
 class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     def run(self, edit, document, item):
 
-        reference = _reference(self.view)
-        root = _doorstop_root(view=self.view)
-        _run_doorstop_command(
-            [
-                "--root",
-                root,
-                "add_reference",
-                "--item",
-                item,
-                json.dumps(reference),
-            ]
+        reference = doorstop_util._reference(self.view)
+        doorstop_util._doorstop(
+            self, "add_reference", "--item", item, json.dumps(reference)
         )
 
     def is_enabled(self, *args):
@@ -226,7 +146,7 @@ class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     def input(self, args):
         # TODO: make this configurable in settings
         # if not empty, use setting, otherwise try first open folder
-        root = _doorstop_root(view=self.view)
+        root = doorstop_util._doorstop_root(view=self.view)
         return DoorstopFindDocumentInputHandler(root, DoorstopFindItemInputHandler)
 
 
@@ -239,12 +159,10 @@ class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
         return "document"
 
     def list_items(self):
-        result = _run_doorstop_command(["--root", self.root, "documents"])
-        if not result:
+        items = doorstop_util._doorstop(self.root, "documents")
+        if not items:
             return []
 
-        json_result = result.decode("utf-8")
-        items = json.loads(json_result)
         return [item["prefix"] for item in items]
 
     def next_input(self, args):
@@ -262,41 +180,18 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
         return "item"
 
     def list_items(self):
-        result = _run_doorstop_command(
-            [
-                "--root",
-                self.root,
-                "items",
-                "--prefix",
-                self.document,
-            ]
+        items = doorstop_util._doorstop(
+            self.root,
+            "items",
+            "--prefix",
+            self.document,
         )
-        if not result:
+        if not items:
             return []
 
-        json_result = result.decode("utf-8")
-        items = json.loads(json_result)
         return [
             ("{}: {}".format(item["uid"], item["text"]), item["uid"]) for item in items
         ]
-
-
-class DoorstopReference:
-    def __init__(self, region, path=None, file=None, keyword=None, point=None):
-        self.region = region
-        self.path = path
-        self.file = file
-        self.keyword = keyword
-        self.point = point
-        self.row = None
-        self.column = None
-
-    def is_valid(self):
-        if not self.path:
-            return False
-        if self.keyword and not self.point:
-            return False
-        return True
 
 
 class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
@@ -328,7 +223,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
             regions.append(sublime.Region(item.begin(), item.end()))
 
         self.references = [
-            _region_to_reference(self.view, region) for region in regions
+            doorstop_util._region_to_reference(self.view, region) for region in regions
         ]
 
         self.view.add_regions(
@@ -388,7 +283,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
                 )
 
     def link_clicked(self, href):
-        root = Path(_doorstop_root(view=self.view))
+        root = Path(doorstop_util._doorstop_root(view=self.view))
         try:
             href.index(":")
         except ValueError:
@@ -419,7 +314,7 @@ class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
         if idx < 0:
             return
 
-        root = Path(_doorstop_root(view=self.view))
+        root = Path(doorstop_util._doorstop_root(view=self.view))
         reference = self.references[idx]
         if not reference.row:
             self.view.window().open_file(str(root / reference.file), sublime.TRANSIENT)
@@ -434,7 +329,7 @@ class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         regions = self.view.get_regions("doorstop:valid")
         self.references = [
-            _region_to_reference(self.view, region) for region in regions
+            doorstop_util._region_to_reference(self.view, region) for region in regions
         ]
         if len(self.references) == 1:
             self.goto_reference(0)
@@ -462,11 +357,9 @@ class DoorstopGotoParentCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        root = _doorstop_root(view=self.view)
-        result = _run_doorstop_command(
-            ["--root", root, "parents", "--item", file_name.stem]
+        self.parents = doorstop_util._doorstop(
+            self, "parents", "--item", file_name.stem
         )
-        self.parents = json.loads(result.decode("utf-8"))
         items = [
             "{}: {}".format(parent["uid"], parent["text"])
             for idx, parent in enumerate(self.parents)
@@ -500,11 +393,9 @@ class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        root = _doorstop_root(view=self.view)
-        result = _run_doorstop_command(
-            ["--root", root, "children", "--item", file_name.stem]
+        self.children = doorstop_util._doorstop(
+            self, "children", "--item", file_name.stem
         )
-        self.children = json.loads(result.decode("utf-8"))
         items = [
             "{}: {}".format(child["uid"], child["text"])
             for idx, child in enumerate(self.children)
@@ -538,11 +429,7 @@ class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        root = _doorstop_root(view=self.view)
-        result = _run_doorstop_command(
-            ["--root", root, "linked", "--item", file_name.stem]
-        )
-        self.links = json.loads(result.decode("utf-8"))
+        self.links = doorstop_util._doorstop(self, "linked", "--item", file_name.stem)
         items = [
             "{}: {}".format(link["uid"], link["text"])
             for idx, link in enumerate(self.links)
@@ -580,47 +467,3 @@ class DoorstopChooseReferenceInputHandler(sublime_plugin.ListInputHandler):
             else ("{}: {}".format(ref.path, ref.keyword), idx)
             for idx, ref in enumerate(self.references)
         ]
-
-
-def _parse_reference_region(view, region):
-    text = view.substr(region)
-    try:
-        content = yaml.load(text, Loader=yaml.SafeLoader)
-        return content[0]
-    except Exception:
-        print("Could not parse region: {}".format(text))
-    return None
-
-
-def _region_to_reference(view, region):
-    parsed = _parse_reference_region(view, region)
-    path = parsed.get("path")
-    keyword = parsed.get("keyword")
-
-    reference = DoorstopReference(region, path=path, keyword=keyword)
-
-    if not path:
-        return reference
-
-    root = Path(_doorstop_root(view=view))
-    file = root / path
-    if not file.is_file():
-        return reference
-
-    reference.file = str(file)
-
-    with open(str(file), mode="r", encoding="utf-8") as fh:
-        point = 0
-        row = 1
-        line = fh.readline()
-        while line:
-            if keyword in line:
-                reference.point = point
-                reference.row = row
-                reference.column = line.index(keyword) + 1
-                break
-            point += len(line)
-            row += 1
-            line = fh.readline()
-
-    return reference
