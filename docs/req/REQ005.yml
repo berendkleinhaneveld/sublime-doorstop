@@ -12,8 +12,8 @@ text: |
   Doorstop items can contain links, which should be easy
   for the user to follow.
 
-  Could work as:
+  Shall work as:
 
-  * Mouse hover with link
   * Command palette: Doorstop: GoTo Link / Parent
       * Always show list
+  * Mouse hover with link
