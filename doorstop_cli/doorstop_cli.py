@@ -60,6 +60,28 @@ def children(args):
     print(json.dumps(children))
 
 
+def linked(args):
+    tree = doorstop.build(root=args.root)
+    target = tree.find_item(args.item)
+
+    # Find all items that link to the given item
+    linked = []
+    for document in tree.documents:
+        for item in document.items:
+            if target.uid in item.links and item.uid not in target.child_links:
+                linked.append(item)
+
+    result = [
+        {
+            "uid": str(item.uid),
+            "path": item.path,
+            "text": item.header if item.header else item.text.split("\n")[0],
+        }
+        for item in linked
+    ]
+    print(json.dumps(result))
+
+
 def add_reference_to_item(args):
     tree = doorstop.build(root=args.root)
     reference = json.loads(args.reference)
@@ -145,6 +167,12 @@ if __name__ == "__main__":
     children_command = commands.add_parser("children", help="Get children for item")
     children_command.set_defaults(func=children)
     children_command.add_argument(
+        "--item", action="store", required=True, type=str, help="Doorstop item name"
+    )
+
+    linked_command = commands.add_parser("linked", help="Get linked items for item")
+    linked_command.set_defaults(func=linked)
+    linked_command.add_argument(
         "--item", action="store", required=True, type=str, help="Doorstop item name"
     )
 
