@@ -12,6 +12,14 @@ doorstop.settings.ADDREMOVE_FILES = False
 logger = logging.getLogger("DoorstopPlugin")
 
 
+def item_to_dict(item):
+    return {
+        "uid": item.uid.value,
+        "path": item.path,
+        "text": item.header if item.header else item.text.split("\n")[0],
+    }
+
+
 def document(args):
     tree = doorstop.build(root=args.root)
     prefixes = [{"prefix": doc.prefix, "path": doc.path} for doc in tree.documents]
@@ -21,42 +29,21 @@ def document(args):
 def items(args):
     tree = doorstop.build(root=args.root)
     document = tree.find_document(args.prefix)
-    items = [
-        {
-            "uid": str(item.uid),
-            "path": item.path,
-            "text": item.header if item.header else item.text.split("\n")[0],
-        }
-        for item in document.items
-    ]
+    items = [item_to_dict(item) for item in document.items]
     print(json.dumps(items))
 
 
 def parents(args):
     tree = doorstop.build(root=args.root)
     item = tree.find_item(args.item)
-    parents = [
-        {
-            "uid": str(item.uid),
-            "path": item.path,
-            "text": item.header if item.header else item.text.split("\n")[0],
-        }
-        for item in item.parent_items
-    ]
+    parents = [item_to_dict(item) for item in item.parent_items]
     print(json.dumps(parents))
 
 
 def children(args):
     tree = doorstop.build(root=args.root)
     item = tree.find_item(args.item)
-    children = [
-        {
-            "uid": str(item.uid),
-            "path": item.path,
-            "text": item.header if item.header else item.text.split("\n")[0],
-        }
-        for item in item.child_items
-    ]
+    children = [item_to_dict(item) for item in item.child_items]
     print(json.dumps(children))
 
 
@@ -71,15 +58,16 @@ def linked(args):
             if target.uid in item.links and item.uid not in target.child_links:
                 linked.append(item)
 
-    result = [
-        {
-            "uid": str(item.uid),
-            "path": item.path,
-            "text": item.header if item.header else item.text.split("\n")[0],
-        }
-        for item in linked
-    ]
+    result = [item_to_dict(item) for item in linked]
     print(json.dumps(result))
+
+
+def link(args):
+    tree = doorstop.build(root=args.root)
+    child = tree.find_item(args.child)
+    parent = tree.find_item(args.parent)
+    child.link(parent)
+    print(item_to_dict(child))
 
 
 def add_reference_to_item(args):
@@ -98,6 +86,8 @@ def add_item(args):
     tree = doorstop.build(root=args.root)
     document = tree.find_document(args.prefix)
     item = document.add_item()
+    if hasattr(args, "text"):
+        item.text = args.text
     print(json.dumps({str(item.uid): item.path}))
 
 
@@ -157,6 +147,9 @@ if __name__ == "__main__":
         type=str,
         help="Prefix of doorstop document",
     )
+    add_item_command.add_argument(
+        "--text", action="store", type=str, help="Initial text for new doorstop item"
+    )
 
     parents_command = commands.add_parser("parents", help="Get parents for item")
     parents_command.set_defaults(func=parents)
@@ -174,6 +167,15 @@ if __name__ == "__main__":
     linked_command.set_defaults(func=linked)
     linked_command.add_argument(
         "--item", action="store", required=True, type=str, help="Doorstop item name"
+    )
+
+    link_items_command = commands.add_parser("link", help="Link a child to a parent")
+    link_items_command.set_defaults(func=link)
+    link_items_command.add_argument(
+        "child", action="store", type=str, help="child item"
+    )
+    link_items_command.add_argument(
+        "parent", action="store", type=str, help="parent item"
     )
 
     args = parser.parse_args()
