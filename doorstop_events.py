@@ -23,6 +23,13 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         if not self.view.file_name():
             return
 
+        is_normative = True
+        normative_region = self.view.find_all(r"^normative:.*$")
+        if len(normative_region) == 1 and "true" not in self.view.substr(
+            normative_region[0]
+        ):
+            is_normative = False
+
         file_name = Path(self.view.file_name())
         item = file_name.stem
 
@@ -34,9 +41,13 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         self.view.add_regions(
             "doorstop:links",
             [links_region],
-            "string" if self.parents or self.children or self.other else "invalid",
+            "string"
+            if self.parents or self.children or self.other or not is_normative
+            else "invalid",
             "bookmark",
-            sublime.DRAW_NO_FILL,
+            sublime.DRAW_NO_FILL
+            | sublime.DRAW_NO_OUTLINE
+            | sublime.DRAW_STIPPLED_UNDERLINE,
         )
 
         self.dirty = False
@@ -98,15 +109,15 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
 
         sections = []
         if self.parents:
-            sections.append("Parent(s):<br>")
+            sections.append("Parent(s):")
             for parent in self.parents:
                 sections.append(item_to_link(parent))
         if self.children:
-            sections.append("Child(ren)<br>")
+            sections.append("Child(ren):")
             for child in self.children:
                 sections.append(item_to_link(child))
         if self.other:
-            sections.append("Other<br>")
+            sections.append("Other:")
             for item in self.other:
                 sections.append(item_to_link(item))
 
@@ -115,17 +126,17 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
                 "No links found",
                 sublime.HIDE_ON_MOUSE_MOVE,
                 point,
-                500,
-                500,
+                1000,
+                2000,
                 None,
             )
         else:
             self.view.show_popup(
-                "".join(sections),
+                "<br>".join(sections),
                 sublime.HIDE_ON_MOUSE_MOVE_AWAY,
                 point,
-                500,
-                500,
+                1000,
+                2000,
                 self.link_clicked,
             )
 

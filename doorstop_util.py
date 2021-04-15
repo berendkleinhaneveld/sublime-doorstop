@@ -40,23 +40,22 @@ def _doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> 
     root = settings.get(Setting().ROOT)
     if root:
         return root
-    if view:
-        if view.file_name():
-            path = Path(view.file_name())
-            # best_match = folder with .git as subfolder
-            # and a folder that is in close proximity to current opened file?
-            folders = view.window().folders()
-            rel_paths = [path.relative_to(Path(folder)) for folder in folders]
-            shortest_rel_path = None
-            result = None
-            for rel_path, path in zip(rel_paths, folders):
-                if not shortest_rel_path or len(str(rel_path)) < len(
-                    str(shortest_rel_path)
-                ):
-                    shortest_rel_path = rel_path
-                    result = path
+    if view and view.file_name() is not None:
+        path = Path(view.file_name())
+        # best_match = folder with .git as subfolder
+        # and a folder that is in close proximity to current opened file?
+        folders = view.window().folders()
+        rel_paths = [path.relative_to(Path(folder)) for folder in folders]
+        shortest_rel_path = None
+        result = None
+        for rel_path, path in zip(rel_paths, folders):
+            if not shortest_rel_path or len(str(rel_path)) < len(
+                str(shortest_rel_path)
+            ):
+                shortest_rel_path = rel_path
+                result = path
 
-            return result
+        return result
     if window:
         if window.folders():
             return window.folders()[0]
