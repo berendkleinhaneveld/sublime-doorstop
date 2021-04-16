@@ -4,8 +4,8 @@ from pathlib import Path
 import sublime
 import sublime_plugin
 
-from .doorstop_plugin_api import Setting
-from .doorstop_plugin_api import Settings
+from .doorstop_util import Setting
+from .doorstop_util import Settings
 
 from . import doorstop_util
 
@@ -26,12 +26,18 @@ def trace():
 
 
 def plugin_loaded():
+    """
+    Hook that is called by Sublime when plugin is loaded.
+    """
     global settings
     settings = Settings()
     doorstop_util.settings = settings
 
 
 def plugin_unloaded():
+    """
+    Hook that is called by Sublime when plugin is unloaded.
+    """
     global settings
     settings.remove_callbacks()
 
@@ -41,6 +47,11 @@ def plugin_unloaded():
 
 
 class DoorstopSetDoorstopPythonInterpreterCommand(sublime_plugin.ApplicationCommand):
+    """
+    Command to set the python interpreter in settings that will be
+    used to run the script `doorstop_cli/doorstop_cli.py`
+    """
+
     def run(self, interpreter):
         global settings
         settings.set(Setting().INTERPRETER, interpreter)
@@ -53,6 +64,12 @@ class DoorstopSetDoorstopPythonInterpreterCommand(sublime_plugin.ApplicationComm
 
 
 class DoorstopPythonInterpreterInputHandler(sublime_plugin.TextInputHandler):
+    """
+    TextInputHandler that will ask the user to specify a valid python interpreter.
+    It only accepts input when it can run the python interpreter to import the
+    doorstop package.
+    """
+
     def name(self):
         return "interpreter"
 
@@ -139,9 +156,10 @@ class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, document, item):
         reference = doorstop_util.reference(self.view)
-        doorstop_util.doorstop(
+        result = doorstop_util.doorstop(
             self, "add_reference", "--item", item, json.dumps(reference)
         )
+        self.view.window().open_file(result["path"])
 
     def is_enabled(self, *args):
         return self.view.file_name() is not None
@@ -170,7 +188,18 @@ class DoorstopAddLinkCommand(sublime_plugin.TextCommand):
 
 
 class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
+    """
+    List input handler that will show a list of doorstop documents
+    for the user to choose from.
+    """
+
     def __init__(self, root, next_input_type=None):
+        """
+        root: str
+            Root path of doorstop
+        next_input_type: InputHandler
+            Handler to show when user has picked document
+        """
         self.root = root
         self.next_input_type = next_input_type
 
@@ -191,7 +220,18 @@ class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
 
 
 class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
+    """
+    List input handler that will show a list of doorstop items
+    for the given document name for the user to choose from.
+    """
+
     def __init__(self, root, document):
+        """
+        root: str
+            Root path of doorstop
+        document: str
+            Document prefix/name
+        """
         self.root = root
         self.document = document
 
@@ -199,12 +239,7 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
         return "item"
 
     def list_items(self):
-        items = doorstop_util.doorstop(
-            self.root,
-            "items",
-            "--prefix",
-            self.document,
-        )
+        items = doorstop_util.doorstop(self.root, "items", "--prefix", self.document)
         if not items:
             return []
 
@@ -214,66 +249,32 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
 
 
 class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
+    """
+    ViewEventListener that will try to find and highlight references
+    in yaml/doorstop files.
+    """
+
     @classmethod
     def is_applicable(cls, settings):
         return "yaml" in settings.get("syntax").lower()
-
-    def update_regions(self):
-        references_regions = self.view.find_all(r"^references:$")
-        if len(references_regions) != 1:
-            return
-
-        references_region = references_regions[0]
-
-        lines_that_start_with_word = self.view.find_all(r"^\w+")
-
-        attribute_after_references = None
-        for x in lines_that_start_with_word:
-            if x.begin() > references_region.begin():
-                attribute_after_references = x
-
-        regions = []
-        items = self.view.find_all(r"(?s)*(^- .*?)(?:(?!^[-|\w]).)*")
-        for item in items:
-            if item.begin() < references_region.begin():
-                continue
-            if item.begin() > attribute_after_references.begin():
-                continue
-            regions.append(sublime.Region(item.begin(), item.end()))
-
-        self.references = [
-            doorstop_util.region_to_reference(self.view, region) for region in regions
-        ]
-
-        self.view.add_regions(
-            "doorstop:valid",
-            [ref.region for ref in self.references if ref.is_valid()],
-            "string",
-            "bookmark",
-            sublime.DRAW_NO_FILL,
-        )
-        self.view.add_regions(
-            "doorstop:invalid",
-            [ref.region for ref in self.references if not ref.is_valid()],
-            "invalid",
-            "bookmark",
-            sublime.DRAW_NO_FILL,
-        )
 
     def on_load_async(self):
         """
         Called when the file is finished loading. Runs in a separate thread,
         and does not block the application.
         """
-        self.update_regions()
+        self.update_references_regions()
 
     def on_activated_async(self):
         """
         Called when a view gains input focus.
         """
-        self.update_regions()
+        self.update_references_regions()
 
     def on_hover(self, point, hover_zone):
+        """
+        Called when the user's mouse hovers over a view for a short period.
+        """
         if not hasattr(self, "references"):
             return
 
@@ -301,6 +302,62 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
                     self.link_clicked,
                 )
 
+    def on_close(self):
+        """
+        Called when a view loses input focus.
+        """
+        self.view.erase_regions("doorstop:references:invalid")
+        self.view.erase_regions("doorstop:references:valid")
+
+    def on_modified_async(self):
+        """
+        Called after changes have been made to a view. Runs in a separate thread, and
+        does not block the application.
+        """
+        self.update_references_regions()
+
+    def update_references_regions(self):
+        references_regions = self.view.find_all(r"^references:$")
+        if len(references_regions) != 1:
+            return
+
+        references_region = references_regions[0]
+
+        lines_that_start_with_word = self.view.find_all(r"^\w+")
+
+        attribute_after_references = None
+        for x in lines_that_start_with_word:
+            if x.begin() > references_region.begin():
+                attribute_after_references = x
+
+        regions = []
+        items = self.view.find_all(r"(?s)*(^- .*?)(?:(?!^[-|\w]).)*")
+        for item in items:
+            if item.begin() < references_region.begin():
+                continue
+            if item.begin() > attribute_after_references.begin():
+                continue
+            regions.append(sublime.Region(item.begin(), item.end()))
+
+        self.references = [
+            doorstop_util.region_to_reference(self.view, region) for region in regions
+        ]
+
+        self.view.add_regions(
+            "doorstop:references:valid",
+            [ref.region for ref in self.references if ref.is_valid()],
+            "string",
+            "bookmark",
+            sublime.DRAW_NO_FILL,
+        )
+        self.view.add_regions(
+            "doorstop:references:invalid",
+            [ref.region for ref in self.references if not ref.is_valid()],
+            "invalid",
+            "bookmark",
+            sublime.DRAW_NO_FILL,
+        )
+
     def link_clicked(self, href):
         root = Path(doorstop_util.doorstop_root(view=self.view))
         try:
@@ -313,22 +370,14 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
             str(root / href), sublime.ENCODED_POSITION | sublime.TRANSIENT
         )
 
-    def on_close(self):
-        """
-        Called when a view loses input focus.
-        """
-        self.view.erase_regions("doorstop:invalid")
-        self.view.erase_regions("doorstop:valid")
-
-    def on_modified_async(self):
-        """
-        Called after changes have been made to a view. Runs in a separate thread, and
-        does not block the application.
-        """
-        self.update_regions()
-
 
 class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
+    """
+    Text command that shows a list of all the references. Picking
+    a reference will open the file. When a keyword is specified,
+    it will try to look that up.
+    """
+
     def goto_reference(self, idx):
         if idx < 0:
             return
@@ -346,7 +395,7 @@ class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
             )
 
     def run(self, edit):
-        regions = self.view.get_regions("doorstop:valid")
+        regions = self.view.get_regions("doorstop:references:valid")
         self.references = [
             doorstop_util.region_to_reference(self.view, region) for region in regions
         ]
@@ -363,87 +412,14 @@ class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
             )
 
     def is_enabled(self, *args):
-        return len(self.view.get_regions("doorstop:valid")) >= 1
-
-
-class DoorstopGotoParentCommand(sublime_plugin.TextCommand):
-    def goto_parent(self, idx):
-        if idx < 0:
-            return
-
-        parent = self.parents[idx]
-        self.view.window().open_file(parent["path"], sublime.TRANSIENT)
-
-    def run(self, edit):
-        file_name = Path(self.view.file_name())
-        self.parents = doorstop_util.doorstop(self, "parents", "--item", file_name.stem)
-        items = [
-            "{}: {}".format(parent["uid"], parent["text"])
-            for idx, parent in enumerate(self.parents)
-        ]
-        self.view.window().show_quick_panel(
-            items,
-            self.goto_parent,
-        )
-        # TODO: maybe show that no parent can be found?
-
-    def is_enabled(self, *args):
-        return doorstop_util.is_doorstop_item_file(self.view.file_name())
-
-
-class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
-    def goto_child(self, idx):
-        if idx < 0:
-            return
-
-        child = self.children[idx]
-        self.view.window().open_file(child["path"], sublime.TRANSIENT)
-
-    def run(self, edit):
-        file_name = Path(self.view.file_name())
-        self.children = doorstop_util.doorstop(
-            self, "children", "--item", file_name.stem
-        )
-        items = [
-            "{}: {}".format(child["uid"], child["text"])
-            for idx, child in enumerate(self.children)
-        ]
-        self.view.window().show_quick_panel(
-            items,
-            self.goto_child,
-        )
-        # TODO: maybe show that no child can be found?
-
-    def is_enabled(self, *args):
-        return doorstop_util.is_doorstop_item_file(self.view.file_name())
-
-
-class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
-    def goto_link(self, idx):
-        if idx < 0:
-            return
-
-        link = self.links[idx]
-        self.view.window().open_file(link["path"], sublime.TRANSIENT)
-
-    def run(self, edit):
-        file_name = Path(self.view.file_name())
-        self.links = doorstop_util.doorstop(self, "linked", "--item", file_name.stem)
-        items = [
-            "{}: {}".format(link["uid"], link["text"])
-            for idx, link in enumerate(self.links)
-        ]
-        self.view.window().show_quick_panel(
-            items,
-            self.goto_link,
-        )
-        # TODO: maybe show that no child can be found?
-
-    def is_enabled(self, *args):
-        return doorstop_util.is_doorstop_item_file(self.view.file_name())
+        return len(self.view.get_regions("doorstop:references:valid")) >= 1
 
 
 class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
+    """
+    Text command that shows a list of all the links from and to this doorstop item
+    """
+
     def run(self, edit):
         file_name = Path(self.view.file_name())
         self.parents = doorstop_util.doorstop(self, "parents", "--item", file_name.stem)
@@ -480,67 +456,15 @@ class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
         self.view.window().open_file(item["path"], sublime.TRANSIENT)
 
 
-class DoorstopChooseReferenceInputHandler(sublime_plugin.ListInputHandler):
-    def __init__(self, references):
-        self.references = references
-
-    def name(self):
-        return "ref_idx"
-
-    def list_items(self):
-        return [
-            (ref.path, idx)
-            if not ref.keyword
-            else ("{}: {}".format(ref.path, ref.keyword), idx)
-            for idx, ref in enumerate(self.references)
-        ]
-
-
 class DoorstopLinksListener(sublime_plugin.ViewEventListener):
+    """
+    ViewEventListener that will try to find link from and to
+    the currently opened doorstop item.
+    """
+
     @classmethod
     def is_applicable(cls, settings):
         return "yaml" in settings.get("syntax").lower()
-
-    def update_regions(self):
-        # Make sure we don't update those regions too often
-        if hasattr(self, "dirty") and not self.dirty:
-            return
-
-        links_regions = self.view.find_all(r"^links")
-        if len(links_regions) != 1:
-            return
-
-        if not self.view.file_name():
-            return
-
-        is_normative = True
-        normative_region = self.view.find_all(r"^normative:.*$")
-        if len(normative_region) == 1 and "true" not in self.view.substr(
-            normative_region[0]
-        ):
-            is_normative = False
-
-        file_name = Path(self.view.file_name())
-        item = file_name.stem
-
-        self.parents = doorstop_util.doorstop(self, "parents", "--item", item)
-        self.children = doorstop_util.doorstop(self, "children", "--item", item)
-        self.other = doorstop_util.doorstop(self, "linked", "--item", item)
-
-        links_region = links_regions[0]
-        self.view.add_regions(
-            "doorstop:links",
-            [links_region],
-            "string"
-            if self.parents or self.children or self.other or not is_normative
-            else "invalid",
-            "bookmark",
-            sublime.DRAW_NO_FILL
-            | sublime.DRAW_NO_OUTLINE
-            | sublime.DRAW_STIPPLED_UNDERLINE,
-        )
-
-        self.dirty = False
 
     def on_load_async(self):
         """
@@ -548,7 +472,7 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         and does not block the application.
         """
         self.dirty = True
-        self.update_regions()
+        self.update_links_regions()
 
     def on_modified_async(self):
         """
@@ -561,22 +485,26 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         """
         Called when a view gains input focus.
         """
-        self.update_regions()
+        self.update_links_regions()
 
     def on_post_save_async(self):
         """
         Called after changes have been made to a view. Runs in a separate thread, and
         does not block the application.
         """
-        self.update_regions()
+        self.update_links_regions()
 
     def on_close(self):
         """
-        Called when a view loses input focus.
+        Called when a view is closed (note, there may still be other views into
+        the same buffer).
         """
         self.view.erase_regions("doorstop:links")
 
     def on_hover(self, point, hover_zone):
+        """
+        Called when the user's mouse hovers over a view for a short period.
+        """
         regions = self.view.get_regions("doorstop:links")
         if not regions:
             return
@@ -629,6 +557,47 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
                 2000,
                 self.link_clicked,
             )
+
+    def update_links_regions(self):
+        # Make sure we don't update those regions too often
+        if hasattr(self, "dirty") and not self.dirty:
+            return
+
+        links_regions = self.view.find_all(r"^links")
+        if len(links_regions) != 1:
+            return
+
+        if not self.view.file_name():
+            return
+
+        is_normative = True
+        normative_region = self.view.find_all(r"^normative:.*$")
+        if len(normative_region) == 1 and "true" not in self.view.substr(
+            normative_region[0]
+        ):
+            is_normative = False
+
+        file_name = Path(self.view.file_name())
+        item = file_name.stem
+
+        self.parents = doorstop_util.doorstop(self, "parents", "--item", item)
+        self.children = doorstop_util.doorstop(self, "children", "--item", item)
+        self.other = doorstop_util.doorstop(self, "linked", "--item", item)
+
+        links_region = links_regions[0]
+        self.view.add_regions(
+            "doorstop:links",
+            [links_region],
+            "string"
+            if self.parents or self.children or self.other or not is_normative
+            else "invalid",
+            "bookmark",
+            sublime.DRAW_NO_FILL
+            | sublime.DRAW_NO_OUTLINE
+            | sublime.DRAW_STIPPLED_UNDERLINE,
+        )
+
+        self.dirty = False
 
     def link_clicked(self, href):
         self.view.window().open_file(href, sublime.TRANSIENT)

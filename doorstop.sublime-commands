@@ -4,9 +4,6 @@
     { "caption": "Doorstop: Add reference", "command": "doorstop_create_reference" },
     { "caption": "Doorstop: Add link", "command": "doorstop_add_link" },
     { "caption": "Doorstop: GoTo reference", "command": "doorstop_goto_reference" },
-    // { "caption": "Doorstop: GoTo parent", "command": "doorstop_goto_parent" },
-    // { "caption": "Doorstop: GoTo child", "command": "doorstop_goto_child" },
-    // { "caption": "Doorstop: GoTo link", "command": "doorstop_goto_link" },
     { "caption": "Doorstop: GoTo link", "command": "doorstop_goto_any_link" },
     { "caption": "Doorstop: Specify interpreter", "command": "doorstop_set_doorstop_python_interpreter" },
     { "caption": "Doorstop: Add item", "command": "doorstop_add_item" }

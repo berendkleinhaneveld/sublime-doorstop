@@ -96,6 +96,8 @@ def add_reference_to_item(args):
         item.references.append(reference)
         item.save()
 
+    print(json.dumps(item_to_dict(item)))
+
 
 def add_item(args):
     tree = doorstop.build(root=args.root)
