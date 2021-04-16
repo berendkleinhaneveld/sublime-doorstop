@@ -154,6 +154,37 @@ class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
         return DoorstopFindDocumentInputHandler(root, DoorstopFindItemInputHandler)
 
 
+class DoorstopAddLinkCommand(sublime_plugin.TextCommand):
+    """
+    Links an item to the current doorstop item.
+    """
+
+    def run(self, edit, document, item):
+        file_name = Path(self.view.file_name())
+        # reference = doorstop_util._reference(self.view)
+        doorstop_util._doorstop(self, "link", file_name.stem, item)
+
+    def input(self, args):
+        # TODO: make this configurable in settings
+        # if not empty, use setting, otherwise try first open folder
+        root = doorstop_util._doorstop_root(view=self.view)
+        return DoorstopFindDocumentInputHandler(root, DoorstopFindItemInputHandler)
+
+    def is_enabled(self, *args):
+        if not self.view.file_name():
+            return False
+        file_name = Path(self.view.file_name())
+        if file_name.suffix != ".yml":
+            return False
+        if not (file_name.parent / ".doorstop.yml").exists():
+            return False
+        if file_name.name.startswith("."):
+            return False
+        if file_name.name == ".doorstop.yml":
+            return False
+        return True
+
+
 class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
     def __init__(self, root, next_input_type=None):
         self.root = root
@@ -382,6 +413,8 @@ class DoorstopGotoParentCommand(sublime_plugin.TextCommand):
             return False
         if not (file_name.parent / ".doorstop.yml").exists():
             return False
+        if file_name.name.startswith("."):
+            return False
         if file_name.name == ".doorstop.yml":
             return False
         return True
@@ -418,6 +451,8 @@ class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
             return False
         if not (file_name.parent / ".doorstop.yml").exists():
             return False
+        if file_name.name.startswith("."):
+            return False
         if file_name.name == ".doorstop.yml":
             return False
         return True
@@ -451,6 +486,8 @@ class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
         if file_name.suffix != ".yml":
             return False
         if not (file_name.parent / ".doorstop.yml").exists():
+            return False
+        if file_name.name.startswith("."):
             return False
         if file_name.name == ".doorstop.yml":
             return False
@@ -491,6 +528,8 @@ class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
         if file_name.suffix != ".yml":
             return False
         if not (file_name.parent / ".doorstop.yml").exists():
+            return False
+        if file_name.name.startswith("."):
             return False
         if file_name.name == ".doorstop.yml":
             return False

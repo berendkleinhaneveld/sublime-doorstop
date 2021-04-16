@@ -66,8 +66,23 @@ def link(args):
     tree = doorstop.build(root=args.root)
     child = tree.find_item(args.child)
     parent = tree.find_item(args.parent)
-    child.link(parent)
-    print(item_to_dict(child))
+    doc = parent.document
+    parents = []
+    while doc:
+        parents.append(doc)
+        try:
+            doc = tree.find_document(doc.parent)
+        except Exception:
+            break
+
+    # child is actually a parent of the
+    # parent, so reverse the order
+    if child.document in parents:
+        parent.link(child)
+        print(item_to_dict(parent))
+    else:
+        child.link(parent)
+        print(item_to_dict(child))
 
 
 def add_reference_to_item(args):
