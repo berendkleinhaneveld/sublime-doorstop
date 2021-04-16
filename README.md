@@ -4,7 +4,7 @@
 
 Please specify the following settings in your Sublime project:
 
-```json
+```JavaScript
 {
    "settings": {
         // Put the full path to a python executable here, preferably
