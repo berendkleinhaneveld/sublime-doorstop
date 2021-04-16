@@ -26,6 +26,25 @@ class DoorstopReference:
         return True
 
 
+def is_doorstop_item_file(file_name, *args):
+    """
+    Returns whether the given file is most likely to
+    be a file that represents a doorstop item
+    """
+    if not file_name:
+        return False
+    file_name = Path(file_name)
+    if file_name.suffix != ".yml":
+        return False
+    if not (file_name.parent / ".doorstop.yml").exists():
+        return False
+    if file_name.name.startswith("."):
+        return False
+    if file_name.name == ".doorstop.yml":
+        return False
+    return True
+
+
 def is_doorstop_configured(view=None, window=None):
     global settings
     if settings.get(Setting().INTERPRETER) is None:

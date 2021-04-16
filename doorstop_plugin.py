@@ -166,18 +166,7 @@ class DoorstopAddLinkCommand(sublime_plugin.TextCommand):
         return DoorstopFindDocumentInputHandler(root, DoorstopFindItemInputHandler)
 
     def is_enabled(self, *args):
-        if not self.view.file_name():
-            return False
-        file_name = Path(self.view.file_name())
-        if file_name.suffix != ".yml":
-            return False
-        if not (file_name.parent / ".doorstop.yml").exists():
-            return False
-        if file_name.name.startswith("."):
-            return False
-        if file_name.name == ".doorstop.yml":
-            return False
-        return True
+        return doorstop_util.is_doorstop_item_file(self.view.file_name())
 
 
 class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
@@ -399,18 +388,7 @@ class DoorstopGotoParentCommand(sublime_plugin.TextCommand):
         # TODO: maybe show that no parent can be found?
 
     def is_enabled(self, *args):
-        if not self.view.file_name():
-            return False
-        file_name = Path(self.view.file_name())
-        if file_name.suffix != ".yml":
-            return False
-        if not (file_name.parent / ".doorstop.yml").exists():
-            return False
-        if file_name.name.startswith("."):
-            return False
-        if file_name.name == ".doorstop.yml":
-            return False
-        return True
+        return doorstop_util.is_doorstop_item_file(self.view.file_name())
 
 
 class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
@@ -437,18 +415,7 @@ class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
         # TODO: maybe show that no child can be found?
 
     def is_enabled(self, *args):
-        if not self.view.file_name():
-            return False
-        file_name = Path(self.view.file_name())
-        if file_name.suffix != ".yml":
-            return False
-        if not (file_name.parent / ".doorstop.yml").exists():
-            return False
-        if file_name.name.startswith("."):
-            return False
-        if file_name.name == ".doorstop.yml":
-            return False
-        return True
+        return doorstop_util.is_doorstop_item_file(self.view.file_name())
 
 
 class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
@@ -473,18 +440,7 @@ class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
         # TODO: maybe show that no child can be found?
 
     def is_enabled(self, *args):
-        if not self.view.file_name():
-            return False
-        file_name = Path(self.view.file_name())
-        if file_name.suffix != ".yml":
-            return False
-        if not (file_name.parent / ".doorstop.yml").exists():
-            return False
-        if file_name.name.startswith("."):
-            return False
-        if file_name.name == ".doorstop.yml":
-            return False
-        return True
+        return doorstop_util.is_doorstop_item_file(self.view.file_name())
 
 
 class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
@@ -513,18 +469,7 @@ class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
         # TODO: maybe show that no child can be found?
 
     def is_enabled(self, *args):
-        if not self.view.file_name():
-            return False
-        file_name = Path(self.view.file_name())
-        if file_name.suffix != ".yml":
-            return False
-        if not (file_name.parent / ".doorstop.yml").exists():
-            return False
-        if file_name.name.startswith("."):
-            return False
-        if file_name.name == ".doorstop.yml":
-            return False
-        return True
+        return doorstop_util.is_doorstop_item_file(self.view.file_name())
 
     def goto_item(self, idx):
         if idx < 0:
