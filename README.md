@@ -1,5 +1,8 @@
 # Doorstop - Sublime Text plugin
 
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+
+
 ## Settings
 
 Please specify the following settings in your Sublime project:
@@ -8,7 +11,7 @@ Please specify the following settings in your Sublime project:
 {
    "settings": {
         // Put the full path to a python executable here, preferably
-        // from virtualenv that has doorstop installed
+        // from a virtualenv that has doorstop installed
         "python_interpreter": "/absolute/path/to/bin/python",
 
         // Put the full path to the doorstop root folder here
