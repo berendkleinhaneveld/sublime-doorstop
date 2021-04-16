@@ -5,6 +5,10 @@ level: 1.11
 links: []
 normative: true
 ref: ''
+references:
+- keyword: 'Doorstop: Add link'
+  path: doorstop.sublime-commands
+  type: file
 reviewed: dZ7F00L8VbJ65pFvcMQDYYXXrVqfVBKTDVzZyGHJGMU=
 text: |
   User shall be able to add link to parent
