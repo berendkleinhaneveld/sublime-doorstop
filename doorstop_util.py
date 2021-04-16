@@ -26,16 +26,16 @@ class DoorstopReference:
         return True
 
 
-def _is_doorstop_configured(view=None, window=None):
+def is_doorstop_configured(view=None, window=None):
     global settings
     if settings.get(Setting().INTERPRETER) is None:
         return False
-    if _doorstop_root(view=view, window=window) is None:
+    if doorstop_root(view=view, window=window) is None:
         return False
     return True
 
 
-def _doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> str:
+def doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> str:
     global settings
     root = settings.get(Setting().ROOT)
     if root:
@@ -61,7 +61,7 @@ def _doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> 
             return window.folders()[0]
 
 
-def _reference(view: sublime.View):
+def reference(view: sublime.View):
     # Check the selection
     keyword = None
     selection = view.sel()
@@ -73,7 +73,7 @@ def _reference(view: sublime.View):
             keyword = selected_text
 
     # Create paths
-    project_dir = _doorstop_root(view=view)
+    project_dir = doorstop_root(view=view)
     current_file = view.window().extract_variables().get("file")
     if not current_file:
         return None
@@ -88,29 +88,14 @@ def _reference(view: sublime.View):
     return result
 
 
-def _run_doorstop_command(args):
-    global settings
-    interpreter = settings.get(Setting().INTERPRETER)
-    # TODO: maybe I could use the 'find_resources' method here from sublime
-    script = Path(__file__).parent / "doorstop_cli" / "doorstop_cli.py"
-    assert script.is_file()
-
-    try:
-        result = subprocess.check_output([interpreter, str(script)] + args)
-    except subprocess.CalledProcessError as e:
-        print("error: {}".format(e))
-        return None
-    return result
-
-
-def _doorstop(item, cmd, *args):
+def doorstop(item, cmd, *args):
     if isinstance(item, str):
         root = item
     else:
         try:
-            root = _doorstop_root(view=item.view)
+            root = doorstop_root(view=item.view)
         except Exception:
-            root = _doorstop_root(window=item.window)
+            root = doorstop_root(window=item.window)
 
     json_result = _run_doorstop_command(["--root", root] + [cmd] + list(args))
     if not json_result:
@@ -119,17 +104,7 @@ def _doorstop(item, cmd, *args):
     return parsed_results
 
 
-def _parse_reference_region(view, region):
-    text = view.substr(region)
-    try:
-        content = yaml.load(text, Loader=yaml.SafeLoader)
-        return content[0]
-    except Exception:
-        print("Could not parse region: {}".format(text))
-    return None
-
-
-def _region_to_reference(view, region):
+def region_to_reference(view, region):
     parsed = _parse_reference_region(view, region)
     path = parsed.get("path")
     keyword = parsed.get("keyword")
@@ -139,7 +114,7 @@ def _region_to_reference(view, region):
     if not path:
         return reference
 
-    root = Path(_doorstop_root(view=view))
+    root = Path(doorstop_root(view=view))
     file = root / path
     if not file.is_file():
         return reference
@@ -161,3 +136,28 @@ def _region_to_reference(view, region):
             line = fh.readline()
 
     return reference
+
+
+def _parse_reference_region(view, region):
+    text = view.substr(region)
+    try:
+        content = yaml.load(text, Loader=yaml.SafeLoader)
+        return content[0]
+    except Exception:
+        print("Could not parse region: {}".format(text))
+    return None
+
+
+def _run_doorstop_command(args):
+    global settings
+    interpreter = settings.get(Setting().INTERPRETER)
+    # TODO: maybe I could use the 'find_resources' method here from sublime
+    script = Path(__file__).parent / "doorstop_cli" / "doorstop_cli.py"
+    assert script.is_file()
+
+    try:
+        result = subprocess.check_output([interpreter, str(script)] + args)
+    except subprocess.CalledProcessError as e:
+        print("error: {}".format(e))
+        return None
+    return result

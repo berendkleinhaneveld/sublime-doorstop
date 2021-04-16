@@ -85,7 +85,7 @@ class DoorstopAddItemCommand(sublime_plugin.WindowCommand):
         args = ["--prefix", self.document]
         if len(text) > 1:
             args += ["--text", text]
-        new_item = doorstop_util._doorstop(self, "add_item", *args)
+        new_item = doorstop_util.doorstop(self, "add_item", *args)
         path = list(new_item.values())[0]
         self.window.open_file(path)
 
@@ -100,11 +100,11 @@ class DoorstopAddItemCommand(sublime_plugin.WindowCommand):
         )
 
     def input(self, args):
-        project_dir = doorstop_util._doorstop_root(window=self.window)
+        project_dir = doorstop_util.doorstop_root(window=self.window)
         return DoorstopFindDocumentInputHandler(project_dir)
 
     def is_enabled(self, *args):
-        return doorstop_util._is_doorstop_configured(
+        return doorstop_util.is_doorstop_configured(
             view=self.window.active_view(), window=self.window
         )
 
@@ -116,7 +116,7 @@ class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
     """
 
     def run(self, edit):
-        reference = doorstop_util._reference(self.view)
+        reference = doorstop_util.reference(self.view)
 
         # Create lines for the clipboard
         lines = [
@@ -138,9 +138,8 @@ class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     """
 
     def run(self, edit, document, item):
-
-        reference = doorstop_util._reference(self.view)
-        doorstop_util._doorstop(
+        reference = doorstop_util.reference(self.view)
+        doorstop_util.doorstop(
             self, "add_reference", "--item", item, json.dumps(reference)
         )
 
@@ -148,9 +147,7 @@ class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
         return self.view.file_name() is not None
 
     def input(self, args):
-        # TODO: make this configurable in settings
-        # if not empty, use setting, otherwise try first open folder
-        root = doorstop_util._doorstop_root(view=self.view)
+        root = doorstop_util.doorstop_root(view=self.view)
         return DoorstopFindDocumentInputHandler(root, DoorstopFindItemInputHandler)
 
 
@@ -161,14 +158,11 @@ class DoorstopAddLinkCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, document, item):
         file_name = Path(self.view.file_name())
-        # reference = doorstop_util._reference(self.view)
-        result = doorstop_util._doorstop(self, "link", file_name.stem, item)
+        result = doorstop_util.doorstop(self, "link", file_name.stem, item)
         self.view.window().open_file(result["path"])
 
     def input(self, args):
-        # TODO: make this configurable in settings
-        # if not empty, use setting, otherwise try first open folder
-        root = doorstop_util._doorstop_root(view=self.view)
+        root = doorstop_util.doorstop_root(view=self.view)
         return DoorstopFindDocumentInputHandler(root, DoorstopFindItemInputHandler)
 
     def is_enabled(self, *args):
@@ -195,7 +189,7 @@ class DoorstopFindDocumentInputHandler(sublime_plugin.ListInputHandler):
         return "document"
 
     def list_items(self):
-        items = doorstop_util._doorstop(self.root, "documents")
+        items = doorstop_util.doorstop(self.root, "documents")
         if not items:
             return []
 
@@ -216,7 +210,7 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
         return "item"
 
     def list_items(self):
-        items = doorstop_util._doorstop(
+        items = doorstop_util.doorstop(
             self.root,
             "items",
             "--prefix",
@@ -259,7 +253,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
             regions.append(sublime.Region(item.begin(), item.end()))
 
         self.references = [
-            doorstop_util._region_to_reference(self.view, region) for region in regions
+            doorstop_util.region_to_reference(self.view, region) for region in regions
         ]
 
         self.view.add_regions(
@@ -319,7 +313,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
                 )
 
     def link_clicked(self, href):
-        root = Path(doorstop_util._doorstop_root(view=self.view))
+        root = Path(doorstop_util.doorstop_root(view=self.view))
         try:
             href.index(":")
         except ValueError:
@@ -350,7 +344,7 @@ class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
         if idx < 0:
             return
 
-        root = Path(doorstop_util._doorstop_root(view=self.view))
+        root = Path(doorstop_util.doorstop_root(view=self.view))
         reference = self.references[idx]
         if not reference.row:
             self.view.window().open_file(str(root / reference.file), sublime.TRANSIENT)
@@ -365,7 +359,7 @@ class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         regions = self.view.get_regions("doorstop:valid")
         self.references = [
-            doorstop_util._region_to_reference(self.view, region) for region in regions
+            doorstop_util.region_to_reference(self.view, region) for region in regions
         ]
         if len(self.references) == 1:
             self.goto_reference(0)
@@ -393,9 +387,7 @@ class DoorstopGotoParentCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        self.parents = doorstop_util._doorstop(
-            self, "parents", "--item", file_name.stem
-        )
+        self.parents = doorstop_util.doorstop(self, "parents", "--item", file_name.stem)
         items = [
             "{}: {}".format(parent["uid"], parent["text"])
             for idx, parent in enumerate(self.parents)
@@ -431,7 +423,7 @@ class DoorstopGotoChildCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        self.children = doorstop_util._doorstop(
+        self.children = doorstop_util.doorstop(
             self, "children", "--item", file_name.stem
         )
         items = [
@@ -469,7 +461,7 @@ class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        self.links = doorstop_util._doorstop(self, "linked", "--item", file_name.stem)
+        self.links = doorstop_util.doorstop(self, "linked", "--item", file_name.stem)
         items = [
             "{}: {}".format(link["uid"], link["text"])
             for idx, link in enumerate(self.links)
@@ -498,13 +490,11 @@ class DoorstopGotoLinkCommand(sublime_plugin.TextCommand):
 class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         file_name = Path(self.view.file_name())
-        self.parents = doorstop_util._doorstop(
-            self, "parents", "--item", file_name.stem
-        )
-        self.children = doorstop_util._doorstop(
+        self.parents = doorstop_util.doorstop(self, "parents", "--item", file_name.stem)
+        self.children = doorstop_util.doorstop(
             self, "children", "--item", file_name.stem
         )
-        self.links = doorstop_util._doorstop(self, "linked", "--item", file_name.stem)
+        self.links = doorstop_util.doorstop(self, "linked", "--item", file_name.stem)
 
         all_items = []
         for name, items in zip(
@@ -588,9 +578,9 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         file_name = Path(self.view.file_name())
         item = file_name.stem
 
-        self.parents = doorstop_util._doorstop(self, "parents", "--item", item)
-        self.children = doorstop_util._doorstop(self, "children", "--item", item)
-        self.other = doorstop_util._doorstop(self, "linked", "--item", item)
+        self.parents = doorstop_util.doorstop(self, "parents", "--item", item)
+        self.children = doorstop_util.doorstop(self, "children", "--item", item)
+        self.other = doorstop_util.doorstop(self, "linked", "--item", item)
 
         links_region = links_regions[0]
         self.view.add_regions(
