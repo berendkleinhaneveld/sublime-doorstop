@@ -7,7 +7,7 @@ normative: true
 ref: ''
 references:
 - keyword: def _doorstop_root
-  path: doorstop_plugin.py
+  path: doorstop_util.py
   type: file
 reviewed: YORy-wESnlvl4Olvvjw45TjdpRvG2b9IVI4rJ0sSkpU=
 text: |
