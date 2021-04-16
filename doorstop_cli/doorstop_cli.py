@@ -79,10 +79,10 @@ def link(args):
     # parent, so reverse the order
     if child.document in parents:
         parent.link(child)
-        print(item_to_dict(parent))
+        print(json.dumps(item_to_dict(parent)))
     else:
         child.link(parent)
-        print(item_to_dict(child))
+        print(json.dumps(item_to_dict(child)))
 
 
 def add_reference_to_item(args):

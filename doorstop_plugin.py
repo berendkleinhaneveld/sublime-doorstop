@@ -162,7 +162,8 @@ class DoorstopAddLinkCommand(sublime_plugin.TextCommand):
     def run(self, edit, document, item):
         file_name = Path(self.view.file_name())
         # reference = doorstop_util._reference(self.view)
-        doorstop_util._doorstop(self, "link", file_name.stem, item)
+        result = doorstop_util._doorstop(self, "link", file_name.stem, item)
+        self.view.window().open_file(result["path"])
 
     def input(self, args):
         # TODO: make this configurable in settings
