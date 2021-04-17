@@ -283,7 +283,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         ]
         if len(hovered_references) > 0:
             hovered_reference = hovered_references[0]
-            href = hovered_reference.path
+            href = hovered_reference.file
             if hovered_reference.row:
                 href += (
                     ":"

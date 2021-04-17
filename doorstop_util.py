@@ -65,6 +65,8 @@ class DoorstopReference:
             return False
         if self.keyword and not self.point:
             return False
+        if not self.file:
+            return False
         return True
 
 
@@ -176,11 +178,18 @@ def region_to_reference(view, region):
         return reference
 
     root = Path(doorstop_root(view=view))
-    file = root / path
-    if not file.is_file():
+    file = None
+    for globbed in root.rglob(path):
+        # One is all we need so break on first result
+        file = globbed
+        break
+    # file = root / path
+    if not file or not file.is_file():
         return reference
 
     reference.file = str(file)
+    if not keyword:
+        return reference
 
     with open(str(file), mode="r", encoding="utf-8") as fh:
         point = 0
