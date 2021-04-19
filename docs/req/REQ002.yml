@@ -6,16 +6,13 @@ links: []
 normative: true
 ref: ''
 references:
-- keyword: 'class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):'
-  path: doorstop_plugin.py
-  type: file
-- keyword: 'Doorstop: Copy reference'
+- keyword: 'Doorstop: Add reference'
   path: doorstop.sublime-commands
   type: file
 - keyword: DoorstopCreateReferenceCommand
   path: doorstop_plugin.py
   type: file
-reviewed: CWGIXXpi39Gmp_m6pFAp7SbrlumBOtxswe3ks_C8Qb0=
+reviewed: mIIVnQo8zv1-iZPCJtwhoFgTv6WSdt1PuSZxt70gp3M=
 text: |
   User shall be able to add references to items
 

@@ -126,29 +126,6 @@ class DoorstopAddItemCommand(sublime_plugin.WindowCommand):
         )
 
 
-class DoorstopCopyReferenceCommand(sublime_plugin.TextCommand):
-    """
-    Creates content for the paste buffer to be able to paste the
-    reference in a doorstop item.
-    """
-
-    def run(self, edit):
-        reference = doorstop_util.reference(self.view)
-
-        # Create lines for the clipboard
-        lines = [
-            "- path: '{}'".format(reference["path"]),
-            "  type: {}".format(reference["type"]),
-        ]
-        if "keyword" in reference:
-            lines.append("  keyword: '{}'".format(reference["keyword"]))
-
-        sublime.set_clipboard("\n".join(lines))
-
-    def is_enabled(self, *args):
-        return self.view.file_name() is not None
-
-
 class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     """
     Add a new reference to an existing doorstop item.

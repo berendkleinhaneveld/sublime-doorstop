@@ -1,6 +1,5 @@
 [
     // { "caption": "Doorstop: Debug", "command": "doorstop_debug" },
-    { "caption": "Doorstop: Copy reference", "command": "doorstop_copy_reference" },
     { "caption": "Doorstop: Add reference", "command": "doorstop_create_reference" },
     { "caption": "Doorstop: Add link", "command": "doorstop_add_link" },
     { "caption": "Doorstop: GoTo reference", "command": "doorstop_goto_reference" },
