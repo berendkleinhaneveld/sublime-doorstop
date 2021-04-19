@@ -16,10 +16,10 @@ references:
 - keyword: DoorstopGotoReferenceCommand
   path: doorstop_plugin.py
   type: file
-reviewed: GtLZHrMkbP_LU3KPJuCaVLGVDzkQUjTARVbS09CM6Sc=
+reviewed: 6t1UYI6Vz4TqI7Vl0OGx6yjrNbDisyOmXfmxWpq1Atc=
 text: |
   User shall be able to navigate to references
 
-  References in doorstop items will be highlighted. When the user hovers
+  References in doorstop items shall be highlighted. When the user hovers
   the mouse over an item, a popup shall appear with which the user can
   navigate to the reference.
