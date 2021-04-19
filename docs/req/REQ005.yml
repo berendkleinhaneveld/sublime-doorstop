@@ -5,15 +5,11 @@ level: 3.1
 links: []
 normative: true
 ref: ''
-reviewed: lO4EIsEEbbXOjjZfCIFKEOK044GGPwKKkZqeBpW1wNg=
+reviewed: DJ4LPk2fcTM_Yyk_ytIiBGnz75BGHiGpY5LGgMaRkNQ=
 text: |
-  User shall be able to navigate to parent/linked item(s)
+  User shall be able to navigate to linked items
 
-  Doorstop items can contain links, which should be easy
-  for the user to follow.
-
-  Shall work as:
-
-  * Command palette: Doorstop: GoTo Link / Parent
-      * Always show list
-  * Mouse hover with link
+  The user can run a command to goto a linked item
+  (parent/child/sibling) or can hover the mouse over
+  the `links` attribute in doorstop items to show a list
+  of links that can be clicked to open those links.
