@@ -1,7 +1,7 @@
 active: true
 derived: false
 header: ''
-level: 1.4
+level: 2.1
 links: []
 normative: true
 ref: ''
@@ -13,5 +13,6 @@ reviewed: EY3lClkwLBMS0iHzqoGHeuKtC-zPSSr6Okle3cMZYok=
 text: |
   User shall be able to add items to documents
 
-  * Command palette: Doorstop: Add item
-      * Search for document prefixes
+  When running the command, the user will be asked to which document
+  the new item should be added. Optionally, the user can specify text
+  that will be added to the item.

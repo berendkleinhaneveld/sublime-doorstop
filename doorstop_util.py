@@ -183,7 +183,7 @@ def region_to_reference(view, region):
         # One is all we need so break on first result
         file = globbed
         break
-    # file = root / path
+
     if not file or not file.is_file():
         return reference
 

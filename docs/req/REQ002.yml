@@ -1,7 +1,7 @@
 active: true
 derived: false
 header: ''
-level: 1.3
+level: 4.4
 links: []
 normative: true
 ref: ''
@@ -17,16 +17,12 @@ references:
   type: file
 reviewed: CWGIXXpi39Gmp_m6pFAp7SbrlumBOtxswe3ks_C8Qb0=
 text: |
-  User shall be able to create references
+  User shall be able to add references to items
 
   When the user highlights some text in a file, then the user
-  shall be able to run a command to copy a 'doorstop' reference
-  dict.
+  shall be able to run a command to create a doorstop reference
+  and add it to a doorstop item.
 
   Creating a reference shall ask the user to search for an item
-  to add the reference to. Search would include item uids and
+  to add the reference to. Search shall include item uids and
   header/text (first line) content.
-
-  * Command palette: Doorstop: copy reference
-  * Command palette: Doorstop: create reference
-      * Ask user to search for doorstop item to add reference to
