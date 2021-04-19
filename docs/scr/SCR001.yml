@@ -1,0 +1,18 @@
+active: true
+derived: false
+header: ''
+level: 1.0
+links:
+- REQ002: x6cVeT5qoh1-Wn3vciYDz-muu-rZQhVUh7QNOCHCiXQ=
+normative: true
+ref: ''
+references:
+- keyword: 'Doorstop: Add reference'
+  path: doorstop.sublime-commands
+  type: file
+- keyword: DoorstopCreateReferenceCommand
+  path: doorstop_plugin.py
+  type: file
+reviewed: 79g82tB2jPoS7Xat-DU4vnz1-7efO1IA6XY5MOmP0ho=
+text: |
+  References for adding references to doorstop items

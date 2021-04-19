@@ -5,14 +5,7 @@ level: 4.4
 links: []
 normative: true
 ref: ''
-references:
-- keyword: 'Doorstop: Add reference'
-  path: doorstop.sublime-commands
-  type: file
-- keyword: DoorstopCreateReferenceCommand
-  path: doorstop_plugin.py
-  type: file
-reviewed: mIIVnQo8zv1-iZPCJtwhoFgTv6WSdt1PuSZxt70gp3M=
+reviewed: x6cVeT5qoh1-Wn3vciYDz-muu-rZQhVUh7QNOCHCiXQ=
 text: |
   User shall be able to add references to items
 
