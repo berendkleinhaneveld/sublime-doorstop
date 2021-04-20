@@ -1,12 +1,13 @@
 active: true
 derived: false
-header: 'Navigating to linked items'
+header: |
+  Navigating to linked items
 level: 1.4
 links:
-- REQ005: null
+- REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: null
+reviewed: cFJWFMUzjgHPJuWFA6EVYmFSJaRzfybWCtDx2_GstPw=
 text: |
   The user can run a command to goto a linked item
   (parent/child/sibling) or can hover the mouse over

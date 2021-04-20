@@ -1,16 +1,17 @@
 active: true
 derived: false
-header: 'Linting references'
+header: |
+  Linting references
 level: 1.8
 links:
-- REQ009: null
+- REQ009: NmZoHLEuB91PYsIbfufu_lAyQzjcidVY0QNZKFXpBUU=
 normative: true
 ref: ''
 references:
 - keyword: 'class DoorstopReferencesListener(sublime_plugin.ViewEventListener):'
   path: doorstop_plugin.py
   type: file
-reviewed: null
+reviewed: aCWbZoe402bsuVQ7gx2NcnFUOjaMnvZAA4hMEWUljOk=
 text: |
   When a reference in a doorstop item is highlighted,
   the color is used to show whether the reference is valid.

@@ -4,10 +4,10 @@ header: |
   Navigating to items from references
 level: 1.12
 links:
-- REQ010: null
+- REQ010: LCdy6aCk9oe2TYOyWRyBlwRVTRiwWzdPR6Odc6wqVnU=
 normative: true
 ref: ''
-reviewed: null
+reviewed: yRU22ME2lxhydpEO-yL_mzaQPtDtVJ73mgBt89B2YME=
 text: |
   Bookmarks shall be shown at locations when a doorstop item
   contains a reference to the file (with keyword).

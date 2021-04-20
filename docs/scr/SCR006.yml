@@ -4,10 +4,10 @@ header: |
   Navigating to child items
 level: 1.5
 links:
-- REQ005: null
+- REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: null
+reviewed: lBK8QeSLVddJdjDFrwpMqpBCNCrTn1Zy2hfATWJMRAU=
 text: |
   The user shall be able to quickly navigate to child doorstop
   items (items that have the current item as their parent).

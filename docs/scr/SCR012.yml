@@ -1,9 +1,10 @@
 active: true
 derived: false
-header: 'Navigating to references'
+header: |
+  Navigating to references
 level: 1.11
 links:
-- REQ004: null
+- REQ004: 5SEdIDob1s8lI7ASS7GjtRjD0blGfgSQKrqMXqm4NME=
 normative: true
 ref: ''
 references:
@@ -16,7 +17,7 @@ references:
 - keyword: DoorstopGotoReferenceCommand
   path: doorstop_plugin.py
   type: file
-reviewed: null
+reviewed: tXy_NDGvJsB67X1j57JnyxGhnMV9PKV_1vu_fEqzlOw=
 text: |
   References in doorstop items shall be highlighted. When the user hovers
   the mouse over an item, a popup shall appear with which the user can

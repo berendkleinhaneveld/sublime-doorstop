@@ -1,6 +1,7 @@
 active: true
 derived: false
-header: 'Invalid references'
+header: |
+  Invalid references
 level: 4.1
 links: []
 normative: true

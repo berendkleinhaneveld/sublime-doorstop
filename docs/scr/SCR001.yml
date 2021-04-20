@@ -1,6 +1,7 @@
 active: true
 derived: false
-header: 'Adding references to doorstop items'
+header: |
+  Adding references to doorstop items
 level: 1.2
 links:
 - REQ002: x6cVeT5qoh1-Wn3vciYDz-muu-rZQhVUh7QNOCHCiXQ=
@@ -22,4 +23,3 @@ text: |
   Creating a reference shall ask the user to search for an item
   to add the reference to. Search shall include item uids and
   header/text (first line) content.
-

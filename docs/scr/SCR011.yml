@@ -4,10 +4,10 @@ header: |
   Linting links
 level: '1.10'
 links:
-- REQ022: null
+- REQ022: oGM5ouTPg9LldeeIIkWpNPAJJQZUTzk5OnnsQvQ-QB0=
 normative: true
 ref: ''
-reviewed: null
+reviewed: Zdc6x1EA45LmEJGaJ8JUCY4w5sC8uiMdczFnJakQgEM=
 text: |
   When the links attribute in a doorstop item is highlighted,
   the color is used to show whether there are any links.

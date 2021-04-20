@@ -1,6 +1,7 @@
 active: true
 derived: false
-header: 'Add references'
+header: |
+  Add references
 level: 4.3
 links: []
 normative: true

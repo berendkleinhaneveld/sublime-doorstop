@@ -1,11 +1,12 @@
 active: true
 derived: false
-header: 'Automatically finding valid python interpreter'
+header: |
+  Automatically finding valid python interpreter
 level: 1.1
 links: []
 normative: true
 ref: ''
-reviewed: null
+reviewed: MqUnTsMF0S9ZO1Y5vaKEN4cFfGQfiqM0hdpd78nVnPM=
 text: |
   If user has specified doorstop root, then it might be
   possible to check if there is a `pyproject.toml` file

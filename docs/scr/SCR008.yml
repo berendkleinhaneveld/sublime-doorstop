@@ -1,12 +1,13 @@
 active: true
 derived: false
-header: 'Highlighting referenced locations'
+header: |
+  Highlighting referenced locations
 level: 1.7
 links:
-- REQ007: null
+- REQ007: e5DBDI64DI23uv2P_TeHjvK0ufPcvjaL76e3ld5jTg8=
 normative: true
 ref: ''
-reviewed: null
+reviewed: Bb7ptzptxHv-h8WgsQjx7TEQdK5zqH1j4ddP-0Ief0M=
 text: |
   Doorstop items can contain references to files and optionally
   to certain keywords within those files. When the user opens such a

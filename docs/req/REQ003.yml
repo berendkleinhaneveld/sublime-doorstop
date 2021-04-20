@@ -1,6 +1,7 @@
 active: true
 derived: false
-header: 'Add new items'
+header: |
+  Add new items
 level: 2.1
 links: []
 normative: true

@@ -1,11 +1,12 @@
 active: true
 derived: false
-header: 'Disable plugin when no doorstop functionality is needed'
+header: |
+  Disable plugin when no doorstop functionality is needed
 level: 1.2
 links: []
 normative: true
 ref: ''
-reviewed: null
+reviewed: 5f-7SHvR44V-taytOEm5MrGsw-BQwZxmO3sHLiFWwr8=
 text: |
   Plugin will only run when a project is active?
 

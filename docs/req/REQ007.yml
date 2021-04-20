@@ -1,6 +1,7 @@
 active: true
 derived: false
-header: 'Referenced locations'
+header: |
+  Referenced locations
 level: 4.4
 links: []
 normative: true

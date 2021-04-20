@@ -4,14 +4,14 @@ header: |
   Adding a new item to a document
 level: 1.1
 links:
-- REQ003: null
+- REQ003: PXZv_5ohJoP6NhEaXqdQp9GmNlJVpKtm7LCKTJ2s8hg=
 normative: true
 ref: ''
 references:
 - keyword: 'class DoorstopAddItemCommand(sublime_plugin.WindowCommand):'
   path: doorstop_plugin.py
   type: file
-reviewed: null
+reviewed: HXvs7J4Efmq6HvphqHC48sc9-U2Y7W8uCIzE7pzekYg=
 text: |
   When running the command, the user will be asked to which document
   the new item should be added. Optionally, the user can specify text

@@ -1,16 +1,17 @@
 active: true
 derived: false
-header: 'Configuring doorstop plugin'
+header: |
+  Configuring doorstop plugin
 level: 1.9
 links:
-- REQ011: null
+- REQ011: HWLs_mE0_TWavKV_nNoCR6otZEyZ0XR-CWBMGGmL1uk=
 normative: true
 ref: ''
 references:
 - keyword: def doorstop_root
   path: doorstop_util.py
   type: file
-reviewed: null
+reviewed: qeKbd9uf3vC3HlZ7SekOBbvZ5w0HFRumBBkReQ81Nu8=
 text: |
   The user shall be able to specify plugin settings interactively,
   without having to dig through settings files (although user

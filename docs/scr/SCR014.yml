@@ -3,10 +3,10 @@ derived: false
 header: ''
 level: 1.13
 links:
-- REQ009: null
+- REQ009: NmZoHLEuB91PYsIbfufu_lAyQzjcidVY0QNZKFXpBUU=
 normative: true
 ref: ''
-reviewed: null
+reviewed: SxWw0D7Pr4wIWbTsrqg_n9Zc4zQZY0A_ig9BKsZu-jU=
 text: |
   There shall be a command to list all the missing references
   in the project. Or maybe all the issues, or items with issues.
