@@ -1,0 +1,12 @@
+active: true
+derived: false
+header: ''
+level: 1.13
+links:
+- REQ009: null
+normative: true
+ref: ''
+reviewed: null
+text: |
+  There shall be a command to list all the missing references
+  in the project. Or maybe all the issues, or items with issues.

@@ -1,0 +1,18 @@
+active: true
+derived: false
+header: 'Adding links'
+level: 1.6
+links:
+- REQ014: null
+normative: true
+ref: ''
+references:
+- keyword: 'Doorstop: Add link'
+  path: doorstop.sublime-commands
+  type: file
+reviewed: null
+text: |
+  The user shall be able to add links to items from the
+  current item. When the other item is actually from a
+  child document, the link is added from the child to
+  the current item (autoreverse).

@@ -1,6 +1,6 @@
 active: true
 derived: false
-header: ''
+header: 'Navigate links'
 level: 3.2
 links: []
 normative: true
@@ -8,8 +8,3 @@ ref: ''
 reviewed: DJ4LPk2fcTM_Yyk_ytIiBGnz75BGHiGpY5LGgMaRkNQ=
 text: |
   User shall be able to navigate to linked items
-
-  The user can run a command to goto a linked item
-  (parent/child/sibling) or can hover the mouse over
-  the `links` attribute in doorstop items to show a list
-  of links that can be clicked to open those links.

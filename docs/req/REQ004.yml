@@ -1,25 +1,10 @@
 active: true
 derived: false
-header: ''
-level: 4.3
-links:
-- REQ009: Gy1MhfEJxBqJYKR0FOxFKSXTa-N8Eke0s971pcsqRjw=
+header: 'Navigate references'
+level: 4.2
+links: []
 normative: true
 ref: ''
-references:
-- keyword: 'class DoorstopReferencesListener(sublime_plugin.ViewEventListener):'
-  path: doorstop_plugin.py
-  type: file
-- keyword: 'Doorstop: GoTo reference'
-  path: doorstop.sublime-commands
-  type: file
-- keyword: DoorstopGotoReferenceCommand
-  path: doorstop_plugin.py
-  type: file
 reviewed: 6t1UYI6Vz4TqI7Vl0OGx6yjrNbDisyOmXfmxWpq1Atc=
 text: |
   User shall be able to navigate to references
-
-  References in doorstop items shall be highlighted. When the user hovers
-  the mouse over an item, a popup shall appear with which the user can
-  navigate to the reference.

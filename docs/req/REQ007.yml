@@ -1,24 +1,10 @@
 active: true
 derived: false
-header: ''
-level: 4.1
+header: 'Referenced locations'
+level: 4.4
 links: []
 normative: true
 ref: ''
-references:
-- keyword: 'class DoorstopReferencesListener(sublime_plugin.ViewEventListener):'
-  path: doorstop_plugin.py
-  type: file
 reviewed: W6QMB3IvzGVCJdlniZayfi-IsiFnA9iVAF-zhqH54xE=
 text: |
-  User shall be able to see referenced files/keywords
-
-  The doorstop documents can contain references to files and optionally
-  to certain keywords within those files. When the user opens such a
-  file, then a bookmark shall be shown.
-
-  The bookmark shall also work as a link to the doorstop document that
-  contains the reference.
-
-  * Command palette: Doorstop: GoTo Item
-      * List all items that contain references to current file
+  User shall be able to see referenced locations

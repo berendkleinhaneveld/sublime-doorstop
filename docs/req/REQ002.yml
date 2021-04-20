@@ -1,18 +1,10 @@
 active: true
 derived: false
-header: ''
-level: 4.4
+header: 'Add references'
+level: 4.3
 links: []
 normative: true
 ref: ''
 reviewed: x6cVeT5qoh1-Wn3vciYDz-muu-rZQhVUh7QNOCHCiXQ=
 text: |
   User shall be able to add references to items
-
-  When the user highlights some text in a file, then the user
-  shall be able to run a command to create a doorstop reference
-  and add it to a doorstop item.
-
-  Creating a reference shall ask the user to search for an item
-  to add the reference to. Search shall include item uids and
-  header/text (first line) content.

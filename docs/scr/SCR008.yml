@@ -1,0 +1,16 @@
+active: true
+derived: false
+header: 'Highlighting referenced locations'
+level: 1.7
+links:
+- REQ007: null
+normative: true
+ref: ''
+reviewed: null
+text: |
+  Doorstop items can contain references to files and optionally
+  to certain keywords within those files. When the user opens such a
+  file, then a bookmark shall be shown (and the keyword highlighted).
+
+  The bookmark shall also work as a link to the doorstop item that
+  contains the reference.

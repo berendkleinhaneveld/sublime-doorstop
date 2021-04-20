@@ -1,10 +1,12 @@
 active: true
 derived: false
 header: ''
-level: 1
+level: '1.0'
 links: []
 normative: false
 ref: ''
 reviewed: sGU3ROgjf8By5lmtvjGIGkq9WKNo9A--TeJerh1p2I0=
 text: |
   Sublime Text Doorstop plugin
+
+  This document contains the use specification.

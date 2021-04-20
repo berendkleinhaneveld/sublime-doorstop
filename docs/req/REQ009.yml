@@ -1,17 +1,10 @@
 active: true
 derived: false
-header: ''
-level: 4.2
+header: 'Invalid references'
+level: 4.1
 links: []
 normative: true
 ref: ''
-references:
-- keyword: 'class DoorstopReferencesListener(sublime_plugin.ViewEventListener):'
-  path: doorstop_plugin.py
-  type: file
 reviewed: Gy1MhfEJxBqJYKR0FOxFKSXTa-N8Eke0s971pcsqRjw=
 text: |
-  Lint the references
-
-  When a reference from an item cannot be found, then it should
-  display an error/warning (just like a linter)
+  User shall be able to easily spot invalid references

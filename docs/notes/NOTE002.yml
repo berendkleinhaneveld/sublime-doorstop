@@ -1,7 +1,7 @@
-active: false
+active: true
 derived: false
-header: ''
-level: 1.11
+header: 'Automatically finding valid python interpreter'
+level: 1.1
 links: []
 normative: true
 ref: ''

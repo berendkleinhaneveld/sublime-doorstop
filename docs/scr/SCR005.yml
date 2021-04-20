@@ -1,0 +1,16 @@
+active: true
+derived: false
+header: 'Navigating to linked items'
+level: 1.4
+links:
+- REQ005: null
+normative: true
+ref: ''
+reviewed: null
+text: |
+  The user can run a command to goto a linked item
+  (parent/child/sibling) or can hover the mouse over
+  the `links` attribute in doorstop items to show a list
+  of links that can be clicked to open those links.
+
+  TODO: split this up into two items

@@ -1,18 +1,10 @@
 active: true
 derived: false
-header: ''
+header: 'GoTo any item'
 level: 2.2
 links: []
 normative: true
 ref: ''
 reviewed: Zmru_GprCpnkZTGRRucg1HnWOvfF7Pv3LUKG1cgwefo=
 text: |
-  User shall be able to navigate docs with search
-
-  Sublime Text allows for quickly switching files, but only based
-  on filenames. There should be a kind of switcher that uses a
-  search phrase from the user to filter doorstop documents.
-
-  Example: CMD+SHIFT+R
-
-  * Command palette: Doorstop: Search
+  User shall be able to goto any item

@@ -1,0 +1,15 @@
+active: true
+derived: false
+header: 'Navigating items'
+level: 1.3
+links:
+- REQ008: null
+normative: true
+ref: ''
+reviewed: null
+text: |
+  Sublime Text allows for quickly switching files, but only based
+  on filenames. There shall be a command that uses a search phrase
+  from the user to filter doorstop documents.
+
+  * Command palette: Doorstop: Search/Find

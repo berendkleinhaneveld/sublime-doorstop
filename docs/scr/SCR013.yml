@@ -1,0 +1,19 @@
+active: true
+derived: false
+header: |
+  Navigating to items from references
+level: 1.12
+links:
+- REQ010: null
+normative: true
+ref: ''
+reviewed: null
+text: |
+  Bookmarks shall be shown at locations when a doorstop item
+  contains a reference to the file (with keyword).
+
+  They will link back to the doorstop item that contains the reference.
+
+  * Bookmark icon in gutter (hover + link)
+  * Command palette: Doorstop: GoTo Item
+      * List all items that contain references to current file

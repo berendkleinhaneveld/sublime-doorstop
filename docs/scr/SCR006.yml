@@ -1,21 +1,22 @@
 active: true
 derived: false
-header: ''
-level: 3.3
-links: []
+header: |
+  Navigating to child items
+level: 1.5
+links:
+- REQ005: null
 normative: true
 ref: ''
-reviewed: r0Q6aVmDtjwqcnWknVuzlklCu4U6mGAPkBqLzNQVm64=
+reviewed: null
 text: |
-  User shall be able to navigate to child item(s)
-
-  When the user has a doorstop item open, then there shall
-  be a way for the user to quickly navigate to child doorstop
+  The user shall be able to quickly navigate to child doorstop
   items (items that have the current item as their parent).
 
-  This might work as:
+  This works as:
 
   * List of links on hover over 'links' attribute
   * Doorstop command palette: Doorstop: GoTo Child
       * When multiple children exist, show interactive list
       * List shows: item id + header/1st line of text
+
+  TODO: split into two items

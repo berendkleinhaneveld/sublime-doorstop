@@ -1,18 +1,10 @@
 active: true
 derived: false
-header: ''
+header: 'Add new items'
 level: 2.1
 links: []
 normative: true
 ref: ''
-references:
-- keyword: 'class DoorstopAddItemCommand(sublime_plugin.WindowCommand):'
-  path: doorstop_plugin.py
-  type: file
 reviewed: MV4dx4ROF3QesJqx-chh1Wt83N_GTICrnkELSNDfC1g=
 text: |
-  User shall be able to add items to documents
-
-  When running the command, the user will be asked to which document
-  the new item should be added. Optionally, the user can specify text
-  that will be added to the item.
+  User shall be able to add new items to documents
