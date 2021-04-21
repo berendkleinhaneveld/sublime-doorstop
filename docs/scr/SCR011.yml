@@ -2,7 +2,7 @@ active: true
 derived: false
 header: |
   Linting links
-level: '1.10'
+level: 1.6
 links:
 - REQ022: oGM5ouTPg9LldeeIIkWpNPAJJQZUTzk5OnnsQvQ-QB0=
 normative: true

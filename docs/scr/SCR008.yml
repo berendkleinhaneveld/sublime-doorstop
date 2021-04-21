@@ -2,7 +2,7 @@ active: true
 derived: false
 header: |
   Highlighting referenced locations
-level: 1.7
+level: 1.9
 links:
 - REQ007: e5DBDI64DI23uv2P_TeHjvK0ufPcvjaL76e3ld5jTg8=
 normative: true

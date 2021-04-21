@@ -2,7 +2,7 @@ active: true
 derived: false
 header: |
   Navigating to child items
-level: 1.5
+level: 1.8
 links:
 - REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true

@@ -2,7 +2,7 @@ active: true
 derived: false
 header: |
   Configuring doorstop plugin
-level: 1.9
+level: 1.14
 links:
 - REQ011: HWLs_mE0_TWavKV_nNoCR6otZEyZ0XR-CWBMGGmL1uk=
 normative: true
