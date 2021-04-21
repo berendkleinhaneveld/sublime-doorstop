@@ -14,7 +14,7 @@ references:
 - keyword: DoorstopCreateReferenceCommand
   path: doorstop_plugin.py
   type: file
-reviewed: 79g82tB2jPoS7Xat-DU4vnz1-7efO1IA6XY5MOmP0ho=
+reviewed: yUv0C5j4vXqY6l_VIytei7B5Kleu9pPGT_RDYGNJXMA=
 text: |
   When the user highlights some text in a file, then the user
   shall be able to run a command to create a doorstop reference

@@ -1,0 +1,13 @@
+active: true
+derived: false
+header: |
+  Navigating to linked items
+level: 1.14
+links:
+- REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
+normative: true
+ref: ''
+reviewed: 7Jp7NlMsYY8JsXIF86tLazFlp-hLgoXdAxgRQ1PAqmg=
+text: |
+  Hovering over the highlighted `links` attribute shows a list
+  of links that can be clicked to navigate to the linked item.

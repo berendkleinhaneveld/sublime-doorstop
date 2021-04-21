@@ -1,11 +1,12 @@
 active: true
 derived: false
-header: 'Introduction'
+header: |
+  Introduction
 level: 1.1
 links: []
 normative: false
 ref: ''
-reviewed: S0Pdrpy17ZZNmf_ATRTWwMob0qmkm0LtdIGscamvsUM=
+reviewed: LXZWkX3wEDOjMFTB7SVHv-Tu_DirdA6FbfSwr43_1bE=
 text: |
   Managing doorstop items, references and links can be
   quite a hassle. This plugin aims to make some tasks

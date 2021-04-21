@@ -1,17 +1,14 @@
 active: true
 derived: false
 header: |
-  Navigating to linked items
+  GoTo linked items
 level: 1.4
 links:
 - REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: cFJWFMUzjgHPJuWFA6EVYmFSJaRzfybWCtDx2_GstPw=
+reviewed: lWoYlnPZq9knGQnfG6viK7Ezg_anzO34PchekqfaQOo=
 text: |
   The user can run a command to goto a linked item
-  (parent/child/sibling) or can hover the mouse over
-  the `links` attribute in doorstop items to show a list
-  of links that can be clicked to open those links.
-
-  TODO: split this up into two items
+  (parent/child/sibling). Triggering the command shows a
+  list of all detected links.
