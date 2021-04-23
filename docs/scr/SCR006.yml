@@ -7,10 +7,16 @@ links:
 - REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: 2IK0lCtSnzFGgsRYRiY9N79cFoHV1xzqifm_xWA4GgM=
+references:
+- keyword: 'def link_href_clicked(self, href):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: X7v5VS90wWQpEwXXVbwZqdTnFghVE7nXyZGh-A4gptc=
 text: |
-  The user shall be able to quickly navigate to child doorstop
-  items (items that have the current item as their parent).
+  Links are represented in doorstop as an entry in a child item
+  that points to a parent item. The parent item does not contain
+  content that points to child items.
 
-  This is implemented as a list of links that gets displayed on
-  hover over the 'links' attribute.
+  Therefore the attribute 'links' is highlighted and when the user
+  hovers the mouse over the attribute, a list of links is displayed
+  that the user can click to quicly navigate to the clicked item.

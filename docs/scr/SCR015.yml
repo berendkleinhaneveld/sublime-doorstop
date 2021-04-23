@@ -7,7 +7,11 @@ links:
 - REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: 7Jp7NlMsYY8JsXIF86tLazFlp-hLgoXdAxgRQ1PAqmg=
+references:
+- keyword: 'def link_href_clicked(self, href):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: mPYlDTVUZUyq8q4WQZYqCO3vBwQ6o9ub1leTWcuVQT4=
 text: |
   Hovering over the highlighted `links` attribute shows a list
   of links that can be clicked to navigate to the linked item.

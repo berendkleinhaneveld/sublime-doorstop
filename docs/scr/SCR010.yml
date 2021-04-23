@@ -2,7 +2,7 @@ active: true
 derived: false
 header: |
   Configuring doorstop plugin
-level: 1.14
+level: 1.13
 links:
 - REQ011: HWLs_mE0_TWavKV_nNoCR6otZEyZ0XR-CWBMGGmL1uk=
 normative: true
@@ -11,7 +11,10 @@ references:
 - keyword: def doorstop_root
   path: doorstop_util.py
   type: file
-reviewed: qeKbd9uf3vC3HlZ7SekOBbvZ5w0HFRumBBkReQ81Nu8=
+- keyword: 'Doorstop: Specify interpreter'
+  path: doorstop.sublime-commands
+  type: file
+reviewed: _JiWR-MOXKoSM3UuQtVTZx0WF6SxJzB910PHmDfsmJA=
 text: |
   The user shall be able to specify plugin settings interactively,
   without having to dig through settings files (although user

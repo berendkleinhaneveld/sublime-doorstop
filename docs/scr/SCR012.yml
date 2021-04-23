@@ -2,7 +2,7 @@ active: true
 derived: false
 header: |
   Navigating to references
-level: 1.11
+level: '1.10'
 links:
 - REQ004: 5SEdIDob1s8lI7ASS7GjtRjD0blGfgSQKrqMXqm4NME=
 normative: true

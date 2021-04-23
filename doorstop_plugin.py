@@ -276,7 +276,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
                     point,
                     500,
                     500,
-                    self.link_clicked,
+                    self.reference_href_clicked,
                 )
 
     def on_close(self):
@@ -335,7 +335,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
             sublime.DRAW_NO_FILL,
         )
 
-    def link_clicked(self, href):
+    def reference_href_clicked(self, href):
         root = Path(doorstop_util.doorstop_root(view=self.view))
         try:
             href.index(":")
@@ -532,7 +532,7 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
                 point,
                 1000,
                 2000,
-                self.link_clicked,
+                self.link_href_clicked,
             )
 
     def update_links_regions(self):
@@ -576,5 +576,5 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
 
         self.dirty = False
 
-    def link_clicked(self, href):
+    def link_href_clicked(self, href):
         self.view.window().open_file(href, sublime.TRANSIENT)

@@ -11,7 +11,10 @@ references:
 - keyword: 'Doorstop: Add link'
   path: doorstop.sublime-commands
   type: file
-reviewed: NHhEESsTV7SiUAoLBLQKy3_zOgzIANXqrFMHV6vbyBY=
+- keyword: 'class DoorstopAddLinkCommand(sublime_plugin.TextCommand):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: RoQ2Y8p2l8pa27yNvR0izHkisi5PaYNqxBXDMU00S2U=
 text: |
   The user shall be able to add links to items from the
   current item. When the other item is actually from a

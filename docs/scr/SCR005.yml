@@ -7,7 +7,14 @@ links:
 - REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: lWoYlnPZq9knGQnfG6viK7Ezg_anzO34PchekqfaQOo=
+references:
+- keyword: 'Doorstop: GoTo link'
+  path: doorstop.sublime-commands
+  type: file
+- keyword: 'class DoorstopGotoAnyLinkCommand(sublime_plugin.TextCommand):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: M-paTCQNvNF4sJOl8yrPT5i1H4DDFdbrTPEBy03ZI-E=
 text: |
   The user can run a command to goto a linked item
   (parent/child/sibling). Triggering the command shows a

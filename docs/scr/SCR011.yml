@@ -7,7 +7,11 @@ links:
 - REQ022: oGM5ouTPg9LldeeIIkWpNPAJJQZUTzk5OnnsQvQ-QB0=
 normative: true
 ref: ''
-reviewed: Zdc6x1EA45LmEJGaJ8JUCY4w5sC8uiMdczFnJakQgEM=
+references:
+- keyword: 'class DoorstopLinksListener(sublime_plugin.ViewEventListener):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: fgT-Xey24yXfnD_8uwkKADp9BvORmR6i4FZdLdGvuGs=
 text: |
   When the links attribute in a doorstop item is highlighted,
   the color is used to show whether there are any links.

@@ -1,8 +1,8 @@
 active: true
 derived: false
 header: |
-  Navigating to items from references
-level: 1.13
+  Navigating to items from referenced locations
+level: 1.12
 links:
 - REQ010: LCdy6aCk9oe2TYOyWRyBlwRVTRiwWzdPR6Odc6wqVnU=
 normative: true

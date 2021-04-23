@@ -11,7 +11,10 @@ references:
 - keyword: 'class DoorstopAddItemCommand(sublime_plugin.WindowCommand):'
   path: doorstop_plugin.py
   type: file
-reviewed: HXvs7J4Efmq6HvphqHC48sc9-U2Y7W8uCIzE7pzekYg=
+- keyword: 'Doorstop: Add item'
+  path: doorstop.sublime-commands
+  type: file
+reviewed: gAD4UUxowMVMJMF0bn_qUHKr9rV_cSAPocNQhBvHp0Y=
 text: |
   When running the command, the user will be asked to which document
   the new item should be added. Optionally, the user can specify text
