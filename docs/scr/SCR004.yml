@@ -7,10 +7,17 @@ links:
 - REQ008: RdCyXynxn3VSCZoNGOCD9cKtfdd203PlbTznKc7udU0=
 normative: true
 ref: ''
+references:
+- keyword: 'Doorstop: GoTo item'
+  path: doorstop.sublime-commands
+  type: file
 reviewed: CwdFz9qgzrvr7Iu54IDji3IhXTwO4QXhyWDCz8B5Q0Y=
 text: |
-  Sublime Text allows for quickly switching files, but only based
-  on filenames. There shall be a command that uses a search phrase
-  from the user to filter doorstop documents.
+  When running the command, a list of documents is shown
+  that the user can filter by typing.
 
-  * Command palette: Doorstop: Search/Find
+  Once the user selects a document from the list, all items
+  from that document will be displayed in a list, with the
+  document prefix and either the header or the first line of
+  the text attribute. Here, the user can type to quickly
+  filter the list and open the desired item.

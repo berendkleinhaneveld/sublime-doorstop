@@ -126,6 +126,26 @@ class DoorstopAddItemCommand(sublime_plugin.WindowCommand):
         )
 
 
+class DoorstopGotoAnyItemCommand(sublime_plugin.WindowCommand):
+    """
+    GoTo any doorstop item.
+    """
+
+    def run(self, document, item):
+        self.window.open_file(item)
+
+    def input(self, args):
+        project_dir = doorstop_util.doorstop_root(window=self.window)
+        return DoorstopFindDocumentInputHandler(
+            project_dir, DoorstopFindItemPathInputHandler
+        )
+
+    def is_enabled(self, *args):
+        return doorstop_util.is_doorstop_configured(
+            view=self.window.active_view(), window=self.window
+        )
+
+
 class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):
     """
     Add a new reference to an existing doorstop item.
@@ -202,7 +222,7 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
     for the given document name for the user to choose from.
     """
 
-    def __init__(self, root, document):
+    def __init__(self, root, document, result_as_path=False):
         """
         root: str
             Root path of doorstop
@@ -211,6 +231,7 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
         """
         self.root = root
         self.document = document
+        self.result_as_path = result_as_path
 
     def name(self):
         return "item"
@@ -221,8 +242,17 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
             return []
 
         return [
-            ("{}: {}".format(item["uid"], item["text"]), item["uid"]) for item in items
+            (
+                "{}: {}".format(item["uid"], item["text"]),
+                item["path"] if self.result_as_path else item["uid"],
+            )
+            for item in items
         ]
+
+
+class DoorstopFindItemPathInputHandler(DoorstopFindItemInputHandler):
+    def __init__(self, root, document):
+        super().__init__(root, document, result_as_path=True)
 
 
 class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
