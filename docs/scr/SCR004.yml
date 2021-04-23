@@ -11,7 +11,7 @@ references:
 - keyword: 'Doorstop: GoTo item'
   path: doorstop.sublime-commands
   type: file
-reviewed: CwdFz9qgzrvr7Iu54IDji3IhXTwO4QXhyWDCz8B5Q0Y=
+reviewed: u0qNwq3aMR72ptkt5NGcUBEhr0AvYgQHW0aBP1L0GTM=
 text: |
   When running the command, a list of documents is shown
   that the user can filter by typing.
