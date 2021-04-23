@@ -7,16 +7,10 @@ links:
 - REQ005: sKTBMNblUJBy5BJ8QUs0LVFKjcgdJqryRUXmD0pA-NQ=
 normative: true
 ref: ''
-reviewed: lBK8QeSLVddJdjDFrwpMqpBCNCrTn1Zy2hfATWJMRAU=
+reviewed: 2IK0lCtSnzFGgsRYRiY9N79cFoHV1xzqifm_xWA4GgM=
 text: |
   The user shall be able to quickly navigate to child doorstop
   items (items that have the current item as their parent).
 
-  This works as:
-
-  * List of links on hover over 'links' attribute
-  * Doorstop command palette: Doorstop: GoTo Child
-      * When multiple children exist, show interactive list
-      * List shows: item id + header/1st line of text
-
-  TODO: split into two items
+  This is implemented as a list of links that gets displayed on
+  hover over the 'links' attribute.

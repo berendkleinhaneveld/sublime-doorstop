@@ -6,9 +6,10 @@ level: 1.1
 links: []
 normative: false
 ref: ''
-reviewed: LXZWkX3wEDOjMFTB7SVHv-Tu_DirdA6FbfSwr43_1bE=
+reviewed: dWWPjuJeoxl-EvEEx_zsxpvB_KU0y34bHLdShLc7TC4=
 text: |
   Managing doorstop items, references and links can be
-  quite a hassle. This plugin aims to make some tasks
-  easier and provide some more insights into the doorstop
-  structure.
+  quite a hassle. This plugin aims to make it easier to
+  manage and navigate doorstop items and thereby indirectly
+  improve the achieved quality of the projects for which
+  doorstop is put to use.
