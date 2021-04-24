@@ -7,7 +7,14 @@ links:
 - REQ010: LCdy6aCk9oe2TYOyWRyBlwRVTRiwWzdPR6Odc6wqVnU=
 normative: true
 ref: ''
-reviewed: yRU22ME2lxhydpEO-yL_mzaQPtDtVJ73mgBt89B2YME=
+references:
+- keyword: 'def referenced_href_clicked(self, href):'
+  path: doorstop_plugin.py
+  type: file
+- keyword: 'class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: OA9XXld4aDn1SaiVp79aGSwtujS5Tv7-JHcK2TAAKik=
 text: |
   Bookmarks shall be shown at locations when a doorstop item
   contains a reference to the file (with keyword).

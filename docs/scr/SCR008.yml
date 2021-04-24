@@ -7,7 +7,14 @@ links:
 - REQ007: e5DBDI64DI23uv2P_TeHjvK0ufPcvjaL76e3ld5jTg8=
 normative: true
 ref: ''
-reviewed: Bb7ptzptxHv-h8WgsQjx7TEQdK5zqH1j4ddP-0Ief0M=
+references:
+- keyword: 'class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):'
+  path: doorstop_plugin.py
+  type: file
+- keyword: 'def update_referenced_locations(self):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: YgO6iCb88oNNNPNKRnCtIbykD_iZOs9xxgEZVE7mcoU=
 text: |
   Doorstop items can contain references to files and optionally
   to certain keywords within those files. When the user opens such a

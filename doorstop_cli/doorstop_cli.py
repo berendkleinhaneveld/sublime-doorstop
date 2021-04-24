@@ -47,6 +47,22 @@ def children(args):
     print(json.dumps(children))
 
 
+def find_references(args):
+    tree = doorstop.build(root=args.root)
+    path = args.path
+    results = []
+    for document in tree:
+        for item in document:
+            if item.references:
+                for reference in item.references:
+                    if reference["path"] == path:
+                        result = item_to_dict(item)
+                        result["keyword"] = reference.get("keyword")
+                        results.append(result)
+
+    print(json.dumps(results))
+
+
 def linked(args):
     tree = doorstop.build(root=args.root)
     target = tree.find_item(args.item)
@@ -193,6 +209,15 @@ if __name__ == "__main__":
     )
     link_items_command.add_argument(
         "parent", action="store", type=str, help="parent item"
+    )
+
+    find_references_command = commands.add_parser(
+        "find_references",
+        help="Find doorstop items that have references to the specified path",
+    )
+    find_references_command.set_defaults(func=find_references)
+    find_references_command.add_argument(
+        "path", action="store", type=str, help="path of file"
     )
 
     args = parser.parse_args()

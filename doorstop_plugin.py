@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import re
 
 import sublime
 import sublime_plugin
@@ -253,6 +254,100 @@ class DoorstopFindItemInputHandler(sublime_plugin.ListInputHandler):
 class DoorstopFindItemPathInputHandler(DoorstopFindItemInputHandler):
     def __init__(self, root, document):
         super().__init__(root, document, result_as_path=True)
+
+
+class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):
+    @classmethod
+    def is_applicable(cls, settings):
+        # TODO: check for existance of doorstop stuff in project root?
+        # return "yaml" in settings.get("syntax").lower()
+        return True
+
+    def on_load_async(self):
+        """
+        Called when the file is finished loading. Runs in a separate thread,
+        and does not block the application.
+        """
+        self.update_referenced_locations()
+
+    def on_activated_async(self):
+        """
+        Called when a view gains input focus.
+        """
+        self.update_referenced_locations()
+
+    def on_close(self):
+        """
+        Called when a view loses input focus.
+        """
+        self.view.erase_regions("doorstop:referenced")
+
+    # def on_modified_async(self):
+    #     """
+    #     Called after changes have been made to a view. Runs in a separate thread, and
+    #     does not block the application.
+    #     """
+    #     self.update_referenced_locations()
+
+    def update_referenced_locations(self):
+        path = self.view.file_name()
+        root = doorstop_util.doorstop_root(view=self.view)
+        if not path or not root:
+            return
+
+        file = Path(path).relative_to(Path(root))
+
+        items = doorstop_util.doorstop(
+            self,
+            "find_references",
+            str(file),
+        )
+        for item in items:
+            keyword = item.get("keyword")
+
+            if not keyword:
+                continue
+
+            region = self.view.find(re.escape(keyword), 0)
+            item["region"] = region
+
+        self.referenced = items
+        self.view.add_regions(
+            "doorstop:referenced",
+            [item["region"] for item in self.referenced],
+            "string",
+            "bookmark",
+            sublime.DRAW_NO_FILL,
+        )
+
+    def on_hover(self, point, hover_zone):
+        """
+        Called when the user's mouse hovers over a view for a short period.
+        """
+        if not hasattr(self, "referenced"):
+            return
+
+        hovered_referenced = [
+            ref for ref in self.referenced if ref["region"].contains(point)
+        ]
+        if not hovered_referenced:
+            return
+
+        hovered_reference = hovered_referenced[0]
+        self.view.show_popup(
+            "<a href='{}'>{}</a>".format(
+                hovered_reference["path"],
+                "{}: {}".format(hovered_reference["uid"], hovered_reference["text"]),
+            ),
+            sublime.HIDE_ON_MOUSE_MOVE_AWAY,
+            point,
+            500,
+            500,
+            self.referenced_href_clicked,
+        )
+
+    def referenced_href_clicked(self, href):
+        self.view.window().open_file(href)
 
 
 class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
