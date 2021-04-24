@@ -2,6 +2,18 @@
 
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
+Managing doorstop items, references and links can be quite a hassle. This plugin aims to make it easier to manage and navigate doorstop items by highlighting references and links, and providing commands and links to quickly navigate those doorstop references and links.
+
+![Example of highlighted references](/assets/example.png "Example of highlighted references")
+
+## Features
+
+* Navigate to any item through header search
+* Highlight (and lint) references and referenced locations
+* Highlight and navigate to linked items (also child items)
+* Add doorstop items to documents
+* Add references to doorstop items
+* Add links to doorstop items
 
 ## Settings
 
