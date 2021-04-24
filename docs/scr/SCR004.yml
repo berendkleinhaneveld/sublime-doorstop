@@ -11,7 +11,13 @@ references:
 - keyword: 'Doorstop: GoTo item'
   path: doorstop.sublime-commands
   type: file
-reviewed: u0qNwq3aMR72ptkt5NGcUBEhr0AvYgQHW0aBP1L0GTM=
+- keyword: 'class DoorstopFindItemPathInputHandler(DoorstopFindItemInputHandler):'
+  path: doorstop_plugin.py
+  type: file
+- keyword: 'class DoorstopGotoAnyItemCommand(sublime_plugin.WindowCommand):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: E-RkfwP3MuDDgb7lCYtz780cOy6L3wEgsWUbROoeXqE=
 text: |
   When running the command, a list of documents is shown
   that the user can filter by typing.

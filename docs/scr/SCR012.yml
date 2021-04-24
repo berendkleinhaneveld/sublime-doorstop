@@ -14,10 +14,13 @@ references:
 - keyword: 'Doorstop: GoTo reference'
   path: doorstop.sublime-commands
   type: file
-- keyword: DoorstopGotoReferenceCommand
+- keyword: 'class DoorstopGotoReferenceCommand(sublime_plugin.TextCommand):'
   path: doorstop_plugin.py
   type: file
-reviewed: tXy_NDGvJsB67X1j57JnyxGhnMV9PKV_1vu_fEqzlOw=
+- keyword: 'def reference_href_clicked(self, href):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: DWtmYE5y3fGZRKZLrNQsfwNWsOvtZIG1HWWh3TbXkzA=
 text: |
   References in doorstop items shall be highlighted. When the user hovers
   the mouse over an item, a popup shall appear with which the user can

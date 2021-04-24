@@ -14,7 +14,13 @@ references:
 - keyword: 'Doorstop: Specify interpreter'
   path: doorstop.sublime-commands
   type: file
-reviewed: _JiWR-MOXKoSM3UuQtVTZx0WF6SxJzB910PHmDfsmJA=
+- keyword: 'class DoorstopPythonInterpreterInputHandler(sublime_plugin.TextInputHandler):'
+  path: doorstop_plugin.py
+  type: file
+- keyword: 'class DoorstopSetDoorstopPythonInterpreterCommand(sublime_plugin.ApplicationCommand):'
+  path: doorstop_plugin.py
+  type: file
+reviewed: IvyqQL9jrydi4UyLwHzWqePUBepmJjnho6cPxRRQx_M=
 text: |
   The user shall be able to specify plugin settings interactively,
   without having to dig through settings files (although user
