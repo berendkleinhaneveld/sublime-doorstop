@@ -11,10 +11,10 @@ references:
 - keyword: 'Doorstop: Add reference'
   path: doorstop.sublime-commands
   type: file
-- keyword: DoorstopCreateReferenceCommand
+- keyword: 'class DoorstopCreateReferenceCommand(sublime_plugin.TextCommand):'
   path: doorstop_plugin.py
   type: file
-reviewed: yUv0C5j4vXqY6l_VIytei7B5Kleu9pPGT_RDYGNJXMA=
+reviewed: -kHg5IdPOe1WfthsSA5fmZNrfc333tSBhXHBZ1uJlHU=
 text: |
   When the user highlights some text in a file, then the user
   shall be able to run a command to create a doorstop reference
