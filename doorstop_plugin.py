@@ -408,8 +408,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         """
         Called when a view loses input focus.
         """
-        self.view.erase_regions("doorstop:references:invalid")
-        self.view.erase_regions("doorstop:references:valid")
+        self.erase_regions()
 
     def on_modified_async(self):
         """
@@ -418,9 +417,14 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         """
         self.update_references_regions()
 
+    def erase_regions(self):
+        self.view.erase_regions("doorstop:references:invalid")
+        self.view.erase_regions("doorstop:references:valid")
+
     def update_references_regions(self):
         references_regions = self.view.find_all(r"^references:$")
         if len(references_regions) != 1:
+            self.erase_regions()
             return
 
         references_region = references_regions[0]
