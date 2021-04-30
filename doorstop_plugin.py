@@ -280,6 +280,9 @@ class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):
         """
         Called when a view loses input focus.
         """
+        self.erase_regions()
+
+    def erase_regions(self):
         self.view.erase_regions("doorstop:referenced")
 
     # def on_modified_async(self):
@@ -422,28 +425,11 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         self.view.erase_regions("doorstop:references:valid")
 
     def update_references_regions(self):
-        references_regions = self.view.find_all(r"^references:$")
-        if len(references_regions) != 1:
+        # TODO: don't run this too often...
+        regions = regions_for_items_in_yaml_list(self.view, "references")
+        if regions is None:
             self.erase_regions()
             return
-
-        references_region = references_regions[0]
-
-        lines_that_start_with_word = self.view.find_all(r"^\w+")
-
-        attribute_after_references = None
-        for x in lines_that_start_with_word:
-            if x.begin() > references_region.begin():
-                attribute_after_references = x
-
-        regions = []
-        items = self.view.find_all(r"(?s)*(^- .*?)(?:(?!^[-|\w]).)*")
-        for item in items:
-            if item.begin() < references_region.begin():
-                continue
-            if item.begin() > attribute_after_references.begin():
-                continue
-            regions.append(sublime.Region(item.begin(), item.end()))
 
         self.references = [
             doorstop_util.region_to_reference(self.view, region) for region in regions
@@ -611,6 +597,26 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         """
         Called when the user's mouse hovers over a view for a short period.
         """
+        regions = self.view.get_regions("doorstop:links:direct")
+        hovered_regions = [region for region in regions if region.contains(point)]
+        if hovered_regions:
+            # TODO: figure this out in update_links_region
+            # TODO: lint the direct links
+            item_uid = self.view.substr(hovered_regions[0])
+            item = doorstop_util.doorstop(self, "item", item_uid)
+            if item:
+                self.view.show_popup(
+                    "<a href='{}'>{}: {}</a>".format(
+                        item["path"], item["uid"], item["text"]
+                    ),
+                    sublime.HIDE_ON_MOUSE_MOVE_AWAY,
+                    point,
+                    1000,
+                    2000,
+                    self.link_href_clicked,
+                )
+            return
+
         regions = self.view.get_regions("doorstop:links")
         if not regions:
             return
@@ -673,15 +679,33 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         if len(links_regions) != 1:
             return
 
-        if not self.view.file_name():
+        link_regions = regions_for_items_in_yaml_list(self.view, "links")
+        if link_regions is None:
+            self.view.erase_regions("doorstop:links")
             return
 
-        is_normative = True
-        normative_region = self.view.find_all(r"^normative:.*$")
-        if len(normative_region) == 1 and "true" not in self.view.substr(
-            normative_region[0]
-        ):
-            is_normative = False
+        uid_link_regions = []
+        for region in link_regions:
+            content = self.view.substr(region)
+            try:
+                index = content.rindex(": ")
+                uid_link_regions.append(
+                    sublime.Region(region.begin() + 2, region.begin() + index)
+                )
+            except ValueError:
+                uid_link_regions.append(
+                    sublime.Region(region.begin() + 2, region.end())
+                )
+
+        self.view.add_regions(
+            "doorstop:links:direct",
+            uid_link_regions,
+            "string",  # keyword seems to be orange
+            "",
+            sublime.DRAW_NO_FILL
+            | sublime.DRAW_NO_OUTLINE
+            | sublime.DRAW_SOLID_UNDERLINE,
+        )
 
         file_name = Path(self.view.file_name())
         item = file_name.stem
@@ -689,6 +713,13 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         self.parents = doorstop_util.doorstop(self, "parents", "--item", item)
         self.children = doorstop_util.doorstop(self, "children", "--item", item)
         self.other = doorstop_util.doorstop(self, "linked", "--item", item)
+
+        is_normative = True
+        normative_region = self.view.find_all(r"^normative:.*$")
+        if len(normative_region) == 1 and "true" not in self.view.substr(
+            normative_region[0]
+        ):
+            is_normative = False
 
         links_region = links_regions[0]
         self.view.add_regions(
@@ -700,10 +731,37 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
             "bookmark",
             sublime.DRAW_NO_FILL
             | sublime.DRAW_NO_OUTLINE
-            | sublime.DRAW_STIPPLED_UNDERLINE,
+            | sublime.DRAW_SOLID_UNDERLINE,
         )
 
         self.dirty = False
 
     def link_href_clicked(self, href):
         self.view.window().open_file(href, sublime.TRANSIENT)
+
+
+def regions_for_items_in_yaml_list(view, keyword):
+    keyword_regions = view.find_all("^{}:$".format(keyword))
+    if len(keyword_regions) != 1:
+        return None
+
+    keyword_region = keyword_regions[0]
+
+    lines_that_start_with_word = view.find_all(r"^\w+")
+
+    attribute_after_references = None
+    for x in lines_that_start_with_word:
+        if x.begin() > keyword_region.begin():
+            attribute_after_references = x
+            break
+
+    regions = []
+    items = view.find_all(r"(?s)*(^- .*?)(?:(?!^[-|\w]).)*")
+    for item in items:
+        if item.begin() < keyword_region.begin():
+            continue
+        if item.begin() > attribute_after_references.begin():
+            continue
+        regions.append(sublime.Region(item.begin(), item.end()))
+
+    return regions

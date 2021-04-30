@@ -124,6 +124,12 @@ def add_item(args):
     print(json.dumps({str(item.uid): item.path}))
 
 
+def find_item(args):
+    tree = doorstop.build(root=args.root)
+    item = tree.find_item(args.uid)
+    print(json.dumps(item_to_dict(item)))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Get information from doorstop")
     parser.add_argument(
@@ -219,6 +225,13 @@ if __name__ == "__main__":
     find_references_command.add_argument(
         "path", action="store", type=str, help="path of file"
     )
+
+    find_item_command = commands.add_parser(
+        "item",
+        help="Find a doorstop item given a uid",
+    )
+    find_item_command.set_defaults(func=find_item)
+    find_item_command.add_argument("uid", action="store", type=str, help="uid of item")
 
     args = parser.parse_args()
     if hasattr(args, "func"):
