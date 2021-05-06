@@ -311,8 +311,7 @@ class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):
             if not keyword:
                 continue
 
-            # region = self.view.find(re.escape(keyword), 0)
-            region = self.view.find(keyword, 0)
+            region = self.view.find(keyword.replace("(", "\\(").replace(")", "\\)"), 0)
             if region.begin() == -1:
                 print("Could not find keyword: '{}'".format(keyword))
                 continue
