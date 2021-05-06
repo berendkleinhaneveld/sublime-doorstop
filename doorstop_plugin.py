@@ -311,13 +311,17 @@ class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):
             if not keyword:
                 continue
 
-            region = self.view.find(re.escape(keyword), 0)
+            # region = self.view.find(re.escape(keyword), 0)
+            region = self.view.find(keyword, 0)
+            if region.begin() == -1:
+                print("Could not find keyword: '{}'".format(keyword))
+                continue
             item["region"] = region
 
         self.referenced = items
         self.view.add_regions(
             "doorstop:referenced",
-            [item["region"] for item in self.referenced],
+            [item["region"] for item in self.referenced if "region" in item],
             "string",
             "bookmark",
             sublime.DRAW_NO_FILL,
@@ -677,12 +681,13 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
 
         links_regions = self.view.find_all(r"^links")
         if len(links_regions) != 1:
+            self.view.erase_regions("doorstop:links")
             return
 
         link_regions = regions_for_items_in_yaml_list(self.view, "links")
         if link_regions is None:
-            self.view.erase_regions("doorstop:links")
-            return
+            self.view.erase_regions("doorstop:links:direct")
+            link_regions = []
 
         uid_link_regions = []
         for region in link_regions:
