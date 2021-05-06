@@ -377,7 +377,7 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         """
         Called when a view gains input focus.
         """
-        self.update_references_regions()
+        self.update_references_regions(force=True)
 
     def on_hover(self, point, hover_zone):
         """
@@ -389,26 +389,27 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         hovered_references = [
             ref for ref in self.references if ref.region.contains(point)
         ]
-        if len(hovered_references) > 0:
-            hovered_reference = hovered_references[0]
-            href = hovered_reference.file
-            if hovered_reference.row:
-                href += (
-                    ":"
-                    + str(hovered_reference.row)
-                    + ":"
-                    + str(hovered_reference.column)
-                )
+        if len(hovered_references) == 0:
+            return
 
-            if href:
-                self.view.show_popup(
-                    "<a href='{}'>{}</a>".format(href, hovered_reference.path),
-                    sublime.HIDE_ON_MOUSE_MOVE_AWAY,
-                    point,
-                    500,
-                    500,
-                    self.reference_href_clicked,
-                )
+        hovered_reference = hovered_references[0]
+        href = hovered_reference.file
+        if not href:
+            return
+
+        if hovered_reference.row:
+            href += (
+                ":" + str(hovered_reference.row) + ":" + str(hovered_reference.column)
+            )
+
+        self.view.show_popup(
+            "<a href='{}'>{}</a>".format(href, hovered_reference.path),
+            sublime.HIDE_ON_MOUSE_MOVE_AWAY,
+            point,
+            500,
+            500,
+            self.reference_href_clicked,
+        )
 
     def on_close(self):
         """
@@ -427,12 +428,23 @@ class DoorstopReferencesListener(sublime_plugin.ViewEventListener):
         self.view.erase_regions("doorstop:references:invalid")
         self.view.erase_regions("doorstop:references:valid")
 
-    def update_references_regions(self):
-        # TODO: don't run this too often...
+    def update_references_regions(self, force=False):
         regions = regions_for_items_in_yaml_list(self.view, "references")
         if regions is None:
             self.erase_regions()
             return
+
+        # Determine if anything has actually changed
+        if hasattr(self, "references") and not force:
+            refs = []
+            for region in regions:
+                content = self.view.substr(region)
+                for ref in self.references:
+                    if ref.content == content:
+                        refs.append(ref)
+                        break
+            if len(refs) == len(self.references):
+                return
 
         self.references = [
             doorstop_util.region_to_reference(self.view, region) for region in regions
