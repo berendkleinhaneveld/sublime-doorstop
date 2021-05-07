@@ -340,6 +340,7 @@ class DoorstopReferencedLocationsListener(sublime_plugin.ViewEventListener):
             return
 
         hovered_reference = hovered_referenced[0]
+
         self.view.show_popup(
             "<a href='{}'>{}</a>".format(
                 hovered_reference["path"],
@@ -615,11 +616,11 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         regions = self.view.get_regions("doorstop:links:direct")
         hovered_regions = [region for region in regions if region.contains(point)]
         if hovered_regions:
-            # TODO: figure this out in update_links_region
-            # TODO: lint the direct links
+            direct_links = self.direct_links
             item_uid = self.view.substr(hovered_regions[0])
-            item = doorstop_util.doorstop(self, "item", item_uid)
-            if item:
+            items = [link for link in direct_links if link["uid"] == item_uid]
+            if items and len(items) == 1:
+                item = items[0]
                 self.view.show_popup(
                     "<a href='{}'>{}: {}</a>".format(
                         item["path"], item["uid"], item["text"]
@@ -686,6 +687,8 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
             )
 
     def update_links_regions(self):
+        # TODO: lint during edits to links, not just after save
+
         # Make sure we don't update those regions too often
         if hasattr(self, "dirty") and not self.dirty:
             return
@@ -698,16 +701,26 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
         link_regions = regions_for_items_in_yaml_list(self.view, "links")
         if link_regions is None:
             self.view.erase_regions("doorstop:links:direct")
+            self.view.erase_regions("doorstop:links:direct:invalid")
             link_regions = []
 
         uid_link_regions = []
+        invalid_link_regions = []
+        self.direct_links = []
         for region in link_regions:
             content = self.view.substr(region)
             try:
                 index = content.rindex(": ")
-                uid_link_regions.append(
-                    sublime.Region(region.begin() + 2, region.begin() + index)
-                )
+                uid_region = sublime.Region(region.begin() + 2, region.begin() + index)
+                item_uid = self.view.substr(uid_region)
+                try:
+                    item = doorstop_util.doorstop(self, "item", item_uid)
+                    self.direct_links.append(item)
+                    # Valid region
+                    uid_link_regions.append(uid_region)
+                except Exception:
+                    invalid_link_regions.append(uid_region)
+                    continue
             except ValueError:
                 uid_link_regions.append(
                     sublime.Region(region.begin() + 2, region.end())
@@ -717,6 +730,15 @@ class DoorstopLinksListener(sublime_plugin.ViewEventListener):
             "doorstop:links:direct",
             uid_link_regions,
             "string",  # keyword seems to be orange
+            "",
+            sublime.DRAW_NO_FILL
+            | sublime.DRAW_NO_OUTLINE
+            | sublime.DRAW_SOLID_UNDERLINE,
+        )
+        self.view.add_regions(
+            "doorstop:links:direct:invalid",
+            invalid_link_regions,
+            "invalid",  # keyword seems to be orange
             "",
             sublime.DRAW_NO_FILL
             | sublime.DRAW_NO_OUTLINE

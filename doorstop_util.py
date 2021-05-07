@@ -51,8 +51,9 @@ class Settings:
 
 
 class DoorstopReference:
-    def __init__(self, region, path=None, file=None, keyword=None, point=None):
+    def __init__(self, region, content, path=None, file=None, keyword=None, point=None):
         self.region = region
+        self.content = content
         self.path = path
         self.file = file
         self.keyword = keyword
@@ -98,7 +99,8 @@ def is_doorstop_configured(view=None, window=None):
     return True
 
 
-def doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> str:
+def doorstop_root(view=None, window=None):
+    # TODO: maybe find the root once for a plugin instance, and then run with that?
     global settings
     root = settings.get(Setting().ROOT)
     if root:
@@ -108,15 +110,18 @@ def doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> s
         # best_match = folder with .git as subfolder
         # and a folder that is in close proximity to current opened file?
         folders = view.window().folders()
-        rel_paths = [path.relative_to(Path(folder)) for folder in folders]
+        folders_with_git = [find_git(folder) for folder in folders]
+        folders_with_git = [folder for folder in folders_with_git if folder is not None]
+
+        rel_paths = [path.relative_to(Path(folder)) for folder in folders_with_git]
         shortest_rel_path = None
         result = None
-        for rel_path, path in zip(rel_paths, folders):
+        for rel_path, repo in zip(rel_paths, folders_with_git):
             if not shortest_rel_path or len(str(rel_path)) < len(
                 str(shortest_rel_path)
             ):
                 shortest_rel_path = rel_path
-                result = path
+                result = str(repo)
 
         return result
     if window:
@@ -124,7 +129,29 @@ def doorstop_root(view: sublime.View = None, window: sublime.Window = None) -> s
             return window.folders()[0]
 
 
-def reference(view: sublime.View):
+def find_git(path):
+    """
+    Look for .git subfolder, but only at level of path and one folder deep.
+    If that fails, look for a git folder higher up the hierarchy (3 levels).
+    """
+    path = Path(path)
+    if path.is_file():
+        path = path.parent
+
+    if (path / ".git").is_dir():
+        return path
+
+    for git_folder in path.glob("*/.git"):
+        if git_folder.is_dir():
+            return git_folder.parent
+
+    for _ in range(3):
+        path = path.parent
+        if (path / ".git").is_dir():
+            return path
+
+
+def reference(view):
     # Check the selection
     keyword = None
     selection = view.sel()
@@ -172,7 +199,9 @@ def region_to_reference(view, region):
     path = parsed.get("path")
     keyword = parsed.get("keyword")
 
-    reference = DoorstopReference(region, path=path, keyword=keyword)
+    reference = DoorstopReference(
+        region, view.substr(region), path=path, keyword=keyword
+    )
 
     if not path:
         return reference

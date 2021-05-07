@@ -126,8 +126,11 @@ def add_item(args):
 
 def find_item(args):
     tree = doorstop.build(root=args.root)
-    item = tree.find_item(args.uid)
-    print(json.dumps(item_to_dict(item)))
+    try:
+        item = tree.find_item(args.uid)
+        print(json.dumps(item_to_dict(item)))
+    except doorstop.common.DoorstopError:
+        print("")
 
 
 if __name__ == "__main__":
